@@ -2,6 +2,9 @@ import asyncio
 
 import discord
 from discord.ext import commands
+from db import SQLiteDBManager
+
+from bot import discord_config
 
 from events import on_score_update, score_update
 
@@ -31,10 +34,35 @@ class Cog(commands.Cog):
     async def admin_ping(self, ctx):
         await ctx.channel.send(f'{ctx.author.mention}, you are an admin :)')
 
+    # db test
+    @commands.command(name='dbtest')
+    @commands.has_permissions(administrator=True)
+    async def db_test(self, ctx):
+        DB = SQLiteDBManager(discord_config["db_path"])
+        DB.initalize_tables()
+
+        DB.get_discord_user(1)
+        await ctx.channel.send(f'db connected')
+
+
     # message listener
     @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
+
+        DB = SQLiteDBManager(discord_config["db_path"])
+        DB.initalize_tables()
+
+        print(message)
+
+        db_user = DB.get_discord_user(message.author.id)
+        if db_user is None:
+            await ctx.channel.send(f"unknown user. creating")
+            #TODO check Name and Nick
+            DB.create_discord_user(message.author.id, "old name", message.author.Name, 1234, True, False)
+            
+            await ctx.channel.send(f"user created")
+
         # do something with the message here
 
     # triggers the on_score_update event
