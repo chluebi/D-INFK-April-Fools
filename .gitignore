@@ -4,3 +4,5 @@ configs/discord.json
 Pipfile.lock
 
 bot.log
+
+__pycache__

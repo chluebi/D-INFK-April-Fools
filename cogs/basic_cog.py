@@ -1,9 +1,10 @@
 import asyncio
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # This file is meant to be easily copyable and as a quick introduction to how nextcord works
+
 
 class Cog(commands.Cog):
 
@@ -12,7 +13,7 @@ class Cog(commands.Cog):
 
     # basic command
     @commands.command(name='ping')
-    async def ping(self, ctx, message : str):
+    async def ping(self, ctx, message: str = "Default message"):
         await ctx.channel.send(f'{ctx.author.mention}, pong! {message}')
 
     # basic mod command
@@ -21,7 +22,6 @@ class Cog(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def mod_ping(self, ctx):
         await ctx.channel.send(f'{ctx.author.mention}, you are a mod :)')
-
 
     # basic admin command
     @commands.command(name='admin-ping')
@@ -34,7 +34,7 @@ class Cog(commands.Cog):
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
         # do something with the message here
-    
+
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here

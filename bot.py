@@ -2,8 +2,8 @@
 import os
 import logging
 import traceback
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 # local imports
 import util
@@ -11,11 +11,11 @@ import util
 discord_config = util.parse_config('discord')
 
 # determining intents
-intents = nextcord.Intents.default()
+intents = discord.Intents.default()
 intents.members = True
 # intents.presences = True
 
-bot = commands.Bot(command_prefix='{0} '.format(discord_config['prefix']), intents=intents)
+bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
 
 '''
 basic logging
@@ -25,7 +25,9 @@ logging.error(text)
 or
 logging.info(text)
 '''
-logging.basicConfig(handlers=[logging.FileHandler('bot.log', 'a', encoding='utf-8')], format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(handlers=[logging.FileHandler('bot.log', 'a', encoding='utf-8')],
+                    format='%(asctime)s - %(levelname)s - %(userId)s: %(message)s')
+
 
 @bot.event
 async def on_ready():
@@ -36,10 +38,14 @@ async def on_ready():
 # removing help command to hide funny commands
 bot.remove_command('help')
 
+
 @bot.event
 async def on_command_error(ctx, error):
-    error_message = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
-    
+    error_message = ''.join(traceback.format_exception(
+        type(error), error, error.__traceback__))
+    d = {"userId": ctx.message.author.id}
+    logging.error(error_message, extra=d)
+
     # ignoring errors that do not need to be logged
     if (isinstance(error, commands.CommandNotFound)):
         await ctx.message.add_reaction('❌')
@@ -61,6 +67,8 @@ async def on_command_error(ctx, error):
 
 # iterate over all files in the "cogs folder"
 for file in os.listdir('cogs'):
+    if file == "__pycache__":
+        continue
     import_path = 'cogs.' + file.split('.')[0]
     bot.load_extension(import_path)
 

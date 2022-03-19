@@ -1,12 +1,12 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
 
 [packages]
-nextcord = "*"
-pytz = "*"
+discord = "*"
 psycopg2-binary = "*"
+pytz = "*"
 
 [dev-packages]
 
