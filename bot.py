@@ -4,6 +4,7 @@ import logging
 import traceback
 import discord
 from discord.ext import commands
+import events
 
 # local imports
 import util
@@ -26,7 +27,7 @@ or
 logging.info(text)
 '''
 logging.basicConfig(handlers=[logging.FileHandler('bot.log', 'a', encoding='utf-8')],
-                    format='%(asctime)s - %(levelname)s - %(userId)s: %(message)s')
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 @bot.event
@@ -43,8 +44,7 @@ bot.remove_command('help')
 async def on_command_error(ctx, error):
     error_message = ''.join(traceback.format_exception(
         type(error), error, error.__traceback__))
-    d = {"userId": ctx.message.author.id}
-    logging.error(error_message, extra=d)
+    logging.error(error_message)
 
     # ignoring errors that do not need to be logged
     if (isinstance(error, commands.CommandNotFound)):
@@ -64,6 +64,11 @@ async def on_command_error(ctx, error):
         return
 
     logging.error(error_message)
+
+
+# setups the events file
+# has to be done before the other cogs are loaded
+events.setup(bot)
 
 # iterate over all files in the "cogs folder"
 for file in os.listdir('cogs'):

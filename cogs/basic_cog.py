@@ -3,6 +3,8 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from events import on_score_update, score_update
+
 # This file is meant to be easily copyable and as a quick introduction to how nextcord works
 
 
@@ -34,6 +36,17 @@ class Cog(commands.Cog):
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
         # do something with the message here
+
+    # triggers the on_score_update event
+    @commands.command()
+    async def event(self, ctx):
+        await score_update(ctx.message.author, 100)
+    
+    # gets triggered with the on_score_update event
+    @on_score_update
+    async def foobar(bot, user, new_score):
+        channel = bot.get_channel(954423559600631832)
+        await channel.send(f"{str(user)}'s score was changed to {new_score}")
 
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
