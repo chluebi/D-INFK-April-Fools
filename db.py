@@ -15,26 +15,15 @@ class DiscordUser(object):
     
 
 class SQLiteDBManager(object):
-    """
-    Data manager base class.
-    """
 
     def __init__(self, path=None):
-        # Store paths to the main project folders and files
         self._path = path
 
-        # Other class variables
-        self.dbON = False    # Will switch to True when the db is connected.
-        # Connector to database
+        self.dbON = False 
         self._conn = None
-        # Cursor of the database
         self._c = None
 
-        # Try connection
         try:
-            # sqlite3
-            # sqlite file will be in the root of the project, we read the
-            # name from the config file and establish the connection
             db_fname = self._path
             print("---- Connecting to {}".format(db_fname))
             self._conn = sqlite3.connect(db_fname)
@@ -101,7 +90,14 @@ class SQLiteDBManager(object):
 
     def get_discord_user(self, discord_user_id):
 
-        sql = f"""SELECT * FROM DiscordUsers WHERE DiscordUserId = {discord_user_id}"""
+        sql = f"""SELECT 
+            DiscordUserId,
+            UsernameOld,
+            UsernameCurrent,
+            SocialCredit,
+            IsBot,
+            IsAdmin 
+        FROM DiscordUsers WHERE DiscordUserId = {discord_user_id}"""
 
         try:
             c = self._conn.cursor()
