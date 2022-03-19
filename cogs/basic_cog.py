@@ -4,6 +4,7 @@ from email import message
 import discord
 from discord.ext import commands
 from db import SQLiteDBManager
+from db import DiscordUser
 
 from bot import discord_config
 
