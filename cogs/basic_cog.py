@@ -1,4 +1,5 @@
 import asyncio
+from email import message
 
 import discord
 from discord.ext import commands
@@ -15,6 +16,7 @@ class Cog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.db = SQLiteDBManager(discord_config["db_path"])
 
     # basic command
     @commands.command(name='ping')
@@ -38,11 +40,22 @@ class Cog(commands.Cog):
     @commands.command(name='dbtest')
     @commands.has_permissions(administrator=True)
     async def db_test(self, ctx):
-        DB = SQLiteDBManager(discord_config["db_path"])
-        DB.initalize_tables()
+        
+        self.db.initalize_tables()
 
-        DB.get_discord_user(1)
+        self.db.get_discord_user(1)
         await ctx.channel.send(f'db connected')
+
+
+    # credits test
+    @commands.command(name='credits')
+    @commands.has_permissions(administrator=True)
+    async def db_test(self, ctx):
+
+        db_user = self.db.change_credits(ctx.author.id, 2, None)
+        # TODO Check None
+        await ctx.channel.send(f'credits test {ctx.author.name} has {db_user.social_credit}')
+
 
 
     # message listener
@@ -50,16 +63,16 @@ class Cog(commands.Cog):
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
 
-        DB = SQLiteDBManager(discord_config["db_path"])
-        DB.initalize_tables()
+       
 
-        print(message)
+        #print(message)
 
-        db_user = DB.get_discord_user(message.author.id)
+        db_user = self.db.get_discord_user(message.author.id)
+        
         if db_user is None:
             await ctx.channel.send(f"unknown user. creating")
             #TODO check Name and Nick
-            DB.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, True, False)
+            self.db.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, message.author.bot, False)
             
             await ctx.channel.send(f"user created")
 

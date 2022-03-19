@@ -31,6 +31,7 @@ class SQLiteDBManager(object):
             self.dbON = True
 
             self.initalize_tables()
+            self.insert_transaction_types()
         except:
             print("---- Error connecting to the database")
 
@@ -90,6 +91,23 @@ class SQLiteDBManager(object):
             print(e)
 
 
+    def insert_transaction_types(self):
+
+        # TODO Check if exists
+
+        sql = f"""INSERT INTO SocialCreditTransactionTypes
+        VALUES 
+        (1, 'AdminChange', NULL),
+        (2, 'ReactionUp', 1),
+        (3, 'ReactionDown', -1)"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+            self._conn.commit()
+        except Error as e:
+            print(e)
+
     def get_discord_user(self, discord_user_id):
 
         sql = f"""SELECT 
@@ -106,19 +124,54 @@ class SQLiteDBManager(object):
             c.execute(sql)
 
             result = c.fetchone()
-            print(result)
+            #print(result)
             if result is None:
                 return None
 
             user = DiscordUser(result[0], result[1], result[2], result[3], result[4], result[5])
 
-            print(user)
+            #print(user)
 
             return user
         except Error as e:
             print(e)
 
-        
+    def change_credits(self, discord_user_id, transaction_id, amount=None):
+
+        # TODO Pass with params to prevent injection
+        sql = f"""SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = {transaction_id}"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+            result = c.fetchone()
+
+
+            print(result)  
+            
+            if result[2] is not None and amount is None:
+                amount = int(result[2])
+
+            print(amount)
+            
+            if result is None:
+                print(f"transaction type {transaction_id} not found")
+                return None
+
+            if amount is None:
+                print(f"amount is None")
+                return None
+
+            sql_update_credits = f"""UPDATE DiscordUsers
+            SET SocialCredit = SocialCredit + {amount}
+            WHERE DiscordUserId = {discord_user_id}"""
+
+            c.execute(sql_update_credits)
+            self._conn.commit()
+
+            return self.get_discord_user(discord_user_id)
+        except Error as e:
+            print(e)
 
     def create_discord_user(self, discord_user_id, old_name, current_name, social_credit=1000, is_bot=False, is_admin=False):
 
