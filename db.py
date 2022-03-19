@@ -29,6 +29,8 @@ class SQLiteDBManager(object):
             self._conn = sqlite3.connect(db_fname)
             self._c = self._conn.cursor()
             self.dbON = True
+
+            self.initalize_tables()
         except:
             print("---- Error connecting to the database")
 
@@ -126,5 +128,6 @@ class SQLiteDBManager(object):
         try:
             c = self._conn.cursor()
             c.execute(sql)
+            self._conn.commit()
         except Error as e:
             print(e)
