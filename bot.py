@@ -4,10 +4,10 @@ import logging
 import traceback
 import discord
 from discord.ext import commands
-import events
 
 # local imports
 import util
+import events
 
 discord_config = util.parse_config('discord')
 
