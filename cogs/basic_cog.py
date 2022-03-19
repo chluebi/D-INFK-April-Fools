@@ -59,7 +59,7 @@ class Cog(commands.Cog):
         if db_user is None:
             await ctx.channel.send(f"unknown user. creating")
             #TODO check Name and Nick
-            DB.create_discord_user(message.author.id, "old name", message.author.Name, 1234, True, False)
+            DB.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, True, False)
             
             await ctx.channel.send(f"user created")
 
