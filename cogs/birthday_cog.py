@@ -1,6 +1,7 @@
 import asyncio
 
 import discord
+from constants import TransactionType
 import events
 from discord.ext import commands
 from db import SQLiteDBManager
@@ -20,7 +21,7 @@ class Birthday(commands.Cog):
                 if payload.emoji.name == "peepolove":
                     #transactiontype ID 4 probably will change still
                     messenger = payload.member.guild.get_channel(payload.channel_id).fetch_message(payload.message_id).author
-                    self.db.change_credits(payload.member, 4, payload.message_id, payload.channel_id)
+                    self.db.change_credits(payload.member, TransactionType.birthday_wish, payload.message_id, payload.channel_id)
                 
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
