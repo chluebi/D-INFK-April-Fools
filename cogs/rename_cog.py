@@ -29,12 +29,15 @@ class Rename(commands.Cog):
                 return
 
             self.db.change_credits(after.id, TransactionType.invalid_name_change, reason=f"Faulty rename from '{before.nick}' to '{after.nick}'") 
-            # Reload the new credits TODO check if change_credits returns user updated
-            user = self.db.get_discord_user(after.id)
-            score = " [" + str(user.social_credit) + "]"
-            new_name = user.current_name[:25]+score
-            print(new_name)
-            await after.edit(nick=new_name)
+            
+    #updates the user with the correct score again, if there score got updated or they did a faulty rename
+    @events.on_score_update
+    async def rename_member(member: discord.Member, user: DiscordUser, delta_score: int, reason):
+        # Reload the new credits
+        score = " [" + str(user.social_credit) + "]"
+        new_name = user.current_name[:25]+score
+        print(new_name)
+        await member.edit(nick=new_name)
             
             
 
