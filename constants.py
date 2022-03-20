@@ -11,5 +11,6 @@ class TransactionType(Enum):
     invalid_name_change = 7
     play_game = 8
     mention_1984 = 9
+    profanity = 10
 
 
