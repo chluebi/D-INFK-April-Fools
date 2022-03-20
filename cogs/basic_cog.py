@@ -69,17 +69,17 @@ class Cog(commands.Cog):
       
             
                 if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.name} creating")
+                    #await ctx.channel.send(f"unknown user {member.display_name} creating")
                     #TODO check Name and Nick
 
                     
-                    db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
+                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                     
-                    await ctx.channel.send(f"{member.name} created")
+                    await ctx.channel.send(f"{member.display_name} created")
                 
                 credits = str(db_user.social_credit)
                 
-                nick = f'{member.name[:25]} [{credits}]'
+                nick = f'{member.display_name[:25]} [{credits}]'
 
         
 
@@ -106,9 +106,9 @@ class Cog(commands.Cog):
                     #TODO check Name and Nick
 
                     print(member)
-                    db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
+                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                     
-                    await ctx.channel.send(f"{member.name} created")
+                    await ctx.channel.send(f"{member.display_name} created")
                 
 
                 
@@ -150,7 +150,7 @@ class Cog(commands.Cog):
 
         db_user = self.db.change_credits(ctx.author.id, TransactionType.birthday_wish, ctx.message.id, ctx.channel.id, reason="Test credits")
         # TODO Check None
-        await ctx.channel.send(f'credits test {ctx.author.name} has {db_user.social_credit}')
+        await ctx.channel.send(f'credits test {ctx.author.display_name} has {db_user.social_credit}')
 
 
 
@@ -163,9 +163,9 @@ class Cog(commands.Cog):
         
         if db_user is None:
             #TODO check Name and Nick
-            self.db.create_discord_user(message.author.id, message.author.name, 1234, message.author.bot, False)
+            self.db.create_discord_user(message.author.id, message.author.display_name, 1234, message.author.bot, False)
             
-            await ctx.channel.send(f"{message.author.name} created")
+            await ctx.channel.send(f"{message.author.display_name} created")
 
       
     # triggers the on_score_update event
