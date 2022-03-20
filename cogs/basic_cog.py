@@ -170,15 +170,15 @@ class Cog(commands.Cog):
 
     # triggers the on_score_update event
     @commands.command()
-    async def event(self, ctx):
+    async def event(self, ctx, delta_score = 0):
         db_user = self.db.get_discord_user(ctx.message.author.id)
-        await score_update(ctx.message.author, db_user, 0, "Event was triggered")
+        await score_update(ctx.message.author, db_user, delta_score, "Event was triggered")
     
     # gets triggered with the on_score_update event
     @on_score_update
     async def foobar(bot, member, user, delta_score, reason):
         channel = bot.get_channel(954423559600631832)
-        await channel.send(f"{str(member)}'s score was changed to {user.social_credit}")
+        await channel.send(f"{str(member)}'s score was changed by {delta_score}")
 
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
