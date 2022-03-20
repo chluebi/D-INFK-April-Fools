@@ -1,12 +1,10 @@
 import asyncio
 
 import discord
-from cogs.basic_cog import Cog
 import events
 from discord.ext import commands
 from db import SQLiteDBManager
 
-from points import change_points
 
 class Birthday(commands.Cog):
     def __init__(self, bot):
