@@ -1,16 +1,25 @@
 import sqlite3
 from sqlite3 import Error
+import traceback
 
 class DiscordUser(object):
 
-    def __init__(self, discord_user_id, old_name, social_credit, is_bot, is_admin):
+    def __init__(self, discord_user_id, old_name, current_name, social_credit, is_bot, is_admin):
         self.discord_user_id = discord_user_id
         self.old_name = old_name
+        self.current_name = current_name
         self.social_credit = social_credit
         self.is_bot = is_bot
         self.is_admin = is_admin
 
-class SQLiteDBManager(object):
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class SQLiteDBManager(object, metaclass=Singleton):
 
     def __init__(self, path=None):
         self._path = path
@@ -18,6 +27,8 @@ class SQLiteDBManager(object):
         self.dbON = False 
         self._conn = None
         self._c = None
+
+        #traceback.print_stack()
 
         try:
             db_fname = self._path
@@ -51,7 +62,8 @@ class SQLiteDBManager(object):
 
         sql_queries.append(""" CREATE TABLE IF NOT EXISTS DiscordUsers (
                                         DiscordUserId INT UNIQUE,
-                                        UsernameOld TEXT NOT NULL,
+                                        OldUsername TEXT NOT NULL,
+                                        CurrentUsername TEXT NOT NULL,
                                         SocialCredit INTEGER NULL,
                                         IsBot INTEGER NOT NULL,
                                         IsAdmin INTEGER NOT NULL DEFAULT 0
@@ -128,7 +140,8 @@ class SQLiteDBManager(object):
 
         sql = f"""SELECT 
             DiscordUserId,
-            UsernameOld,
+            OldUsername,
+            CurrentUsername,
             SocialCredit,
             IsBot,
             IsAdmin 
@@ -143,7 +156,7 @@ class SQLiteDBManager(object):
             if result is None:
                 return None
 
-            user = DiscordUser(result[0], result[1], result[2], result[3], result[4])
+            user = DiscordUser(result[0], result[1], result[2], result[3], result[4], result[5])
 
             #print(user)
 
@@ -191,7 +204,7 @@ class SQLiteDBManager(object):
             INSERT INTO SocialCreditTransactions 
             (Amount, SocialCreditTransactionTypeId, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
             VALUES ({amount}, {transaction_type_id}, {discord_user_id}, {discord_message_id}, {discord_channel_id}, '{reason}');"""
-            print(sql_update_credits_history)
+            #print(sql_update_credits_history)
 
             c.execute(sql_update_credits_history)
 
@@ -202,10 +215,10 @@ class SQLiteDBManager(object):
         except Error as e:
             print(e)
 
-    def create_discord_user(self, discord_user_id, old_name, current_name, social_credit=1000, is_bot=False, is_admin=False):
+    def create_discord_user(self, discord_user_id, name, social_credit=1000, is_bot=False, is_admin=False):
 
         # TODO Pass with params to prevent injection
-        sql = f"""INSERT INTO DiscordUsers VALUES({discord_user_id}, '{old_name}', '{current_name}', {social_credit}, {int(is_bot)}, {int(is_admin)});"""
+        sql = f"""INSERT INTO DiscordUsers VALUES({discord_user_id}, '{name}', '{name}', {social_credit}, {int(is_bot)}, {int(is_admin)});"""
 
         try:
             c = self._conn.cursor()

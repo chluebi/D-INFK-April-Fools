@@ -19,7 +19,7 @@ class Cog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.db = SQLiteDBManager(discord_config["db_path"])
+        self.db = bot.db
 
     # basic command
     @commands.command(name='ping')
@@ -51,7 +51,7 @@ class Cog(commands.Cog):
             if db_user is None:
                 #await ctx.channel.send(f"unknown user {member.name} creating")
                 #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                 
                 await ctx.channel.send(f"{member.name} created")
 
@@ -72,34 +72,54 @@ class Cog(commands.Cog):
                     #TODO check Name and Nick
 
                     print(member)
-                    db_user = self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                    db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                     
                     await ctx.channel.send(f"{member.name} created")
                 
                 credits = str(db_user.social_credit)
-                print(member.nick)
-                nick = member.nick[:25]
-                member.edit(nick=f'{nick} [{credits}]')
+                
+                nick = f'{member.name[:25]} [{credits}]'
+
+                print(nick)
+
+                result = await member.edit(nick=nick)
+                print(result)
+
         except Exception as e:
             print(e)
-            traceback.print_exc()
     
     # restore names
     @commands.command(name='restorenames')
     @commands.has_permissions(administrator=True)
     async def restore_names(self, ctx):
         
-        
+        try:
+            for member in ctx.guild.members:
+                db_user = self.db.get_discord_user(member.id)
 
-        for member in ctx.guild.members:
-            db_user = self.db.get_discord_user(member.id)
-        
-            if db_user is None:
-                #await ctx.channel.send(f"unknown user {member.name} creating")
-                #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                print(db_user)
+                print(member)
+            
+                if db_user is None:
+                    #await ctx.channel.send(f"unknown user {member.name} creating")
+                    #TODO check Name and Nick
+
+                    print(member)
+                    db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
+                    
+                    await ctx.channel.send(f"{member.name} created")
                 
-                await ctx.channel.send(f"{member.name} created")
+
+                
+                nick = db_user.old_name
+
+                print(nick)
+
+                result = await member.edit(nick=nick)
+                print(result)
+
+        except Exception as e:
+            print(e)
 
 
 
@@ -142,7 +162,7 @@ class Cog(commands.Cog):
         
         if db_user is None:
             #TODO check Name and Nick
-            self.db.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, message.author.bot, False)
+            self.db.create_discord_user(message.author.id, message.author.name, 1234, message.author.bot, False)
             
             await ctx.channel.send(f"{message.author.name} created")
 
