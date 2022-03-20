@@ -3,16 +3,12 @@ from sqlite3 import Error
 
 class DiscordUser(object):
 
-    def __init__(self, discord_user_id, old_name, current_name, social_credit, is_bot, is_admin):
+    def __init__(self, discord_user_id, old_name, social_credit, is_bot, is_admin):
         self.discord_user_id = discord_user_id
         self.old_name = old_name
-        self.current_name = current_name
         self.social_credit = social_credit
         self.is_bot = is_bot
         self.is_admin = is_admin
-
-
-    
 
 class SQLiteDBManager(object):
 
@@ -56,7 +52,6 @@ class SQLiteDBManager(object):
         sql_queries.append(""" CREATE TABLE IF NOT EXISTS DiscordUsers (
                                         DiscordUserId INT UNIQUE,
                                         UsernameOld TEXT NOT NULL,
-                                        UsernameCurrent TEXT NOT NULL,
                                         SocialCredit INTEGER NULL,
                                         IsBot INTEGER NOT NULL,
                                         IsAdmin INTEGER NOT NULL DEFAULT 0
@@ -118,7 +113,7 @@ class SQLiteDBManager(object):
             c.execute(query)
 
             results = c.fetchmany(50)
-            print(results)
+            #print(results)
             #print(result)
             for result in results:
                 output = output + str(result) + "\r\n"
@@ -155,6 +150,8 @@ class SQLiteDBManager(object):
             return user
         except Error as e:
             print(e)
+
+
 
     def change_credits(self, discord_user_id, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
 
@@ -214,5 +211,6 @@ class SQLiteDBManager(object):
             c = self._conn.cursor()
             c.execute(sql)
             self._conn.commit()
+            return self.get_discord_user(discord_user_id)
         except Error as e:
             print(e)
