@@ -1,6 +1,9 @@
 import sqlite3
 from sqlite3 import Error
 import traceback
+import discord
+
+from events import score_update
 
 class DiscordUser(object):
 
@@ -179,8 +182,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e) 
 
-    def change_credits(self, discord_user_id, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
-
+    def change_credits(self, member: discord.Member, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
+        discord_user_id = member
         # TODO Pass with params to prevent injection
         sql = f"""SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = {transaction_type_id}"""
 
@@ -221,10 +224,16 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
             c.execute(sql_update_credits_history)
 
-            #call score_update from events.py here?
             self._conn.commit()
-
-            return self.get_discord_user(discord_user_id)
+            
+            #call score_update from events
+            if reason is None:
+                reason = result[1]
+            
+            user = self.get_discord_user(discord_user_id)
+            score_update(member, user, amount, reason)
+            
+            return user
         except Error as e:
             print(e)
 
