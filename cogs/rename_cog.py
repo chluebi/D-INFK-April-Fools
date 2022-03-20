@@ -6,25 +6,28 @@ from discord.ext import commands
 from db import SQLiteDBManager
 from db import DiscordUser
 
+from constants import TransactionType
+
 
 class Rename(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.db = bot.db
 
     #when I react with peepolove it gives points
     @commands.Cog.listener()
-    async def on_user_update(before, after):
+    async def on_user_update(self, before, after):
         if before.nick != after.nick:
-            user = SQLiteDBManager.get_discord_user(after.id)
+            user = self.db.get_discord_user(after.id)
             score = " [" + user.social_credit + "]"
             
             #if Nickname still has score, dont change but save new nickname into db
             if after.nick.endsWith(score):
                 current = after.nick
                 current = current.removesuffix(score)
-                SQLiteDBManager.rename_discord_user(after.member_id, current)
+                self.db.rename_discord_user(after.member_id, current)
                 return
-            SQLiteDBManager.change_credits(after, 1, -20, "faulty rename") 
+            self.db.change_credits(after, TransactionType.invalid_name_change, -20, "faulty rename") 
             
             
 

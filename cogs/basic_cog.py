@@ -7,6 +7,8 @@ from db import DiscordUser
 
 from bot import discord_config
 
+from constants import TransactionType
+
 from events import on_score_update, score_update
 
 import traceback
@@ -64,14 +66,13 @@ class Cog(commands.Cog):
             for member in ctx.guild.members:
                 db_user = self.db.get_discord_user(member.id)
 
-                print(db_user)
-                print(member)
+      
             
                 if db_user is None:
                     #await ctx.channel.send(f"unknown user {member.name} creating")
                     #TODO check Name and Nick
 
-                    print(member)
+                    
                     db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                     
                     await ctx.channel.send(f"{member.name} created")
@@ -80,10 +81,10 @@ class Cog(commands.Cog):
                 
                 nick = f'{member.name[:25]} [{credits}]'
 
-                print(nick)
+        
 
                 result = await member.edit(nick=nick)
-                print(result)
+           
 
         except Exception as e:
             print(e)
@@ -147,7 +148,7 @@ class Cog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def db_test(self, ctx):
 
-        db_user = self.db.change_credits(ctx.author, 2, ctx.message.id, ctx.channel.id, reason="Test credits")
+        db_user = self.db.change_credits(ctx.author.id, TransactionType.birthday_wish, ctx.message.id, ctx.channel.id, reason="Test credits")
         # TODO Check None
         await ctx.channel.send(f'credits test {ctx.author.name} has {db_user.social_credit}')
 

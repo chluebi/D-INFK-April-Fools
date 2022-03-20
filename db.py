@@ -3,7 +3,9 @@ from sqlite3 import Error
 import traceback
 import discord
 
-from events import score_update
+from constants import TransactionType
+
+#from events import score_update
 
 class DiscordUser(object):
 
@@ -82,6 +84,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         sql_queries.append("""CREATE TABLE IF NOT EXISTS SocialCreditTransactions (
                                     SocialCreditTransactionId INTEGER PRIMARY KEY AUTOINCREMENT,
                                     Amount INTEGER NOT NULL,
+                                    DateTime TEXT NOT NULL,
                                     DiscordUserId INTEGER NOT NULL,
                                     SocialCreditTransactionTypeId INTEGER NOT NULL,
                                     DiscordMessageId INTEGER NOT NULL,
@@ -111,7 +114,12 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (1, 'AdminChange', NULL, 0),
         (2, 'ReactionUp', 1, 0),
         (3, 'ReactionDown', -1, 0),
-        (4, 'BirthdayWish', 20, 1)"""
+        (4, 'BirthdayWish', 20, 1),
+        (5, 'TAApproved', 5, 1),
+        (6, 'ReceiveGoodRep', 20, 1),
+        (7, 'InvalidNameChange', -20, 1),
+        (8, 'PlayGames', -1, 1),
+        (9, 'Mention1984', -20, 1)"""
 
         try:
             c = self._conn.cursor()
@@ -129,8 +137,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
             c.execute(query)
 
             results = c.fetchmany(50)
-            #print(results)
-            #print(result)
+     
             for result in results:
                 output = output + str(result) + "\r\n"
 
@@ -182,8 +189,10 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e) 
 
-    def change_credits(self, member: discord.Member, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
+    def change_credits(self, member: discord.Member, transaction_type: TransactionType, discord_message_id, discord_channel_id, amount=None, reason=None):
         discord_user_id = member
+        print(transaction_type)
+        transaction_type_id = transaction_type.value
         # TODO Pass with params to prevent injection
         sql = f"""SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = {transaction_type_id}"""
 
@@ -218,8 +227,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         
             sql_update_credits_history = f"""
             INSERT INTO SocialCreditTransactions 
-            (Amount, SocialCreditTransactionTypeId, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
-            VALUES ({amount}, {transaction_type_id}, {discord_user_id}, {discord_message_id}, {discord_channel_id}, '{reason}');"""
+            (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
+            VALUES ({amount}, {transaction_type_id}, datetime(), {discord_user_id}, {discord_message_id}, {discord_channel_id}, '{reason}');"""
             #print(sql_update_credits_history)
 
             c.execute(sql_update_credits_history)
@@ -231,7 +240,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
                 reason = result[1]
             
             user = self.get_discord_user(discord_user_id)
-            score_update(member, user, amount, reason)
+            ## ImportError: cannot import name 'score_update' from partially initialized module 'events' (most likely due to a circular import)
+            #score_update(member, user, amount, reason)
             
             return user
         except Error as e:
