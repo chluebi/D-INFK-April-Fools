@@ -33,3 +33,4 @@ Make button with Ignore, Remove x points by pressing
 ## ML stuff
 - add text obscenity detection
 - Maybe add image nsfw detection?
+  - Dont do that, people will send nsfw images on purpose :kekyep:
