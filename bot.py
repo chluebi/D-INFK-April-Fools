@@ -9,6 +9,9 @@ from discord.ext import commands
 import util
 import events
 
+from db import SQLiteDBManager
+from db import DiscordUser
+
 discord_config = util.parse_config('discord')
 
 # determining intents
@@ -17,6 +20,7 @@ intents.members = True
 # intents.presences = True
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
+bot.db = SQLiteDBManager(discord_config["db_path"])
 
 '''
 basic logging

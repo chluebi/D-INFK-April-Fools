@@ -19,7 +19,7 @@ class Cog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.db = SQLiteDBManager(discord_config["db_path"])
+        self.db = bot.db
 
     # basic command
     @commands.command(name='ping')
@@ -51,7 +51,7 @@ class Cog(commands.Cog):
             if db_user is None:
                 #await ctx.channel.send(f"unknown user {member.name} creating")
                 #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                 
                 await ctx.channel.send(f"{member.name} created")
 
@@ -72,7 +72,7 @@ class Cog(commands.Cog):
                     #TODO check Name and Nick
 
                     print(member)
-                    db_user = self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                    db_user = self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                     
                     await ctx.channel.send(f"{member.name} created")
                 
@@ -97,7 +97,7 @@ class Cog(commands.Cog):
             if db_user is None:
                 #await ctx.channel.send(f"unknown user {member.name} creating")
                 #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                 
                 await ctx.channel.send(f"{member.name} created")
 
@@ -142,7 +142,7 @@ class Cog(commands.Cog):
         
         if db_user is None:
             #TODO check Name and Nick
-            self.db.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, message.author.bot, False)
+            self.db.create_discord_user(message.author.id, message.author.name, 1234, message.author.bot, False)
             
             await ctx.channel.send(f"{message.author.name} created")
 

@@ -10,7 +10,7 @@ from bot import discord_config
 class Birthday(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.db = SQLiteDBManager(discord_config["db_path"])
+        self.db = bot.db
 
     #when I react with peepolove it gives points
     @commands.Cog.listener()
