@@ -78,8 +78,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
                                     DiscordUserId INTEGER NOT NULL,
                                     Amount INTEGER NOT NULL,
                                     DateTime TEXT NOT NULL,
-                                    DiscordMessageId INTEGER NOT NULL,
-                                    DiscordChannelId INTEGER NOT NULL,
+                                    DiscordMessageId INTEGER NULL,
+                                    DiscordChannelId INTEGER NULL,
                                     Reason TEXT NULL,
                                     FOREIGN KEY (DiscordUserId) REFERENCES DiscordUsers (DiscordUserId),
                                     FOREIGN KEY (SocialCreditTransactionTypeId) REFERENCES SocialCreditTransactionTypes (SocialCreditTransactionId)
@@ -169,10 +169,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
         # TODO Prevent SQL Injection with name
         try:
             c = self._conn.cursor()
-            sql_update_user_name = f"""UPDATE DiscordUsers
-            SET CurrentUsername = {new_name}
-            WHERE DiscordUserId = {discord_user_id};"""
-            c.execute(sql_update_user_name)
+            c.execute("""UPDATE DiscordUsers
+            SET CurrentUsername = ?
+            WHERE DiscordUserId = ?;""", (new_name, discord_user_id))
 
             self._conn.commit()
 
@@ -180,7 +179,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e) 
 
-    def change_credits(self, member: discord.Member, transaction_type: TransactionType, discord_message_id, discord_channel_id, amount=None, reason=None):
+    def change_credits(self, member: discord.Member, transaction_type: TransactionType, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
         discord_user_id = member
         print(transaction_type)
         transaction_type_id = transaction_type.value
@@ -215,14 +214,12 @@ class SQLiteDBManager(object, metaclass=Singleton):
             c.execute(sql_update_credits)
 
 
-        
-            sql_update_credits_history = f"""
+
+ 
+            c.execute("""
             INSERT INTO SocialCreditTransactions 
             (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
-            VALUES ({amount}, {transaction_type_id}, datetime(), {discord_user_id}, {discord_message_id}, {discord_channel_id}, '{reason}');"""
-            #print(sql_update_credits_history)
-
-            c.execute(sql_update_credits_history)
+            VALUES (?, ?, datetime(), ?, ?, ?, ?);""", (amount, transaction_type_id, discord_user_id, discord_message_id, discord_channel_id, reason))
 
             self._conn.commit()
             
