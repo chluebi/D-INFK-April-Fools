@@ -66,7 +66,7 @@ class Cog(commands.Cog):
             for member in ctx.guild.members:
                 db_user = self.db.get_discord_user(member.id)
 
-      
+
             
                 if db_user is None:
                     #await ctx.channel.send(f"unknown user {member.name} creating")
@@ -84,7 +84,7 @@ class Cog(commands.Cog):
         
 
                 result = await member.edit(nick=nick)
-           
+
 
         except Exception as e:
             print(e)
@@ -167,17 +167,18 @@ class Cog(commands.Cog):
             
             await ctx.channel.send(f"{message.author.name} created")
 
-      
+
     # triggers the on_score_update event
     @commands.command()
     async def event(self, ctx):
-        await score_update(ctx.message.author, 100)
+        db_user = self.db.get_discord_user(ctx.message.author.id)
+        await score_update(ctx.message.author, db_user, 0, "Event was triggered")
     
     # gets triggered with the on_score_update event
     @on_score_update
-    async def foobar(bot, user, new_score):
+    async def foobar(bot, member, user, delta_score, reason):
         channel = bot.get_channel(954423559600631832)
-        await channel.send(f"{str(user)}'s score was changed to {new_score}")
+        await channel.send(f"{str(member)}'s score was changed to {user.social_credit}")
 
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
