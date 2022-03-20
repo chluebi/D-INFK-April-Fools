@@ -10,6 +10,9 @@ from bot import discord_config
 
 from events import on_score_update, score_update
 
+import traceback
+
+
 # This file is meant to be easily copyable and as a quick introduction to how nextcord works
 
 
@@ -36,6 +39,70 @@ class Cog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def admin_ping(self, ctx):
         await ctx.channel.send(f'{ctx.author.mention}, you are an admin :)')
+
+    # db test
+    @commands.command(name='loadusers')
+    @commands.has_permissions(administrator=True)
+    async def load_users(self, ctx):
+        
+
+        for member in ctx.guild.members:
+            db_user = self.db.get_discord_user(member.id)
+        
+            if db_user is None:
+                #await ctx.channel.send(f"unknown user {member.name} creating")
+                #TODO check Name and Nick
+                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                
+                await ctx.channel.send(f"{member.name} created")
+
+
+    # enforce naming
+    @commands.command(name='enforcenames')
+    @commands.has_permissions(administrator=True)
+    async def enforce_names(self, ctx):
+        try:
+            for member in ctx.guild.members:
+                db_user = self.db.get_discord_user(member.id)
+
+                print(db_user)
+                print(member)
+            
+                if db_user is None:
+                    #await ctx.channel.send(f"unknown user {member.name} creating")
+                    #TODO check Name and Nick
+
+                    print(member)
+                    db_user = self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                    
+                    await ctx.channel.send(f"{member.name} created")
+                
+                credits = str(db_user.social_credit)
+                print(member.nick)
+                nick = member.nick[:25]
+                member.edit(nick=f'{nick} [{credits}]')
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+    
+    # restore names
+    @commands.command(name='restorenames')
+    @commands.has_permissions(administrator=True)
+    async def restore_names(self, ctx):
+        
+        
+
+        for member in ctx.guild.members:
+            db_user = self.db.get_discord_user(member.id)
+        
+            if db_user is None:
+                #await ctx.channel.send(f"unknown user {member.name} creating")
+                #TODO check Name and Nick
+                self.db.create_discord_user(member.id, member.name, member.name, 1000, member.bot, False)
+                
+                await ctx.channel.send(f"{member.name} created")
+
+
 
     # db test
     @commands.command(name='dbtest')
@@ -72,21 +139,15 @@ class Cog(commands.Cog):
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
 
-       
-
-        #print(message)
-
         db_user = self.db.get_discord_user(message.author.id)
         
         if db_user is None:
-            await ctx.channel.send(f"unknown user. creating")
             #TODO check Name and Nick
             self.db.create_discord_user(message.author.id, message.author.name, message.author.name, 1234, message.author.bot, False)
             
-            await ctx.channel.send(f"user created")
+            await ctx.channel.send(f"{message.author.name} created")
 
-        # do something with the message here
-
+      
     # triggers the on_score_update event
     @commands.command()
     async def event(self, ctx):
