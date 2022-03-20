@@ -17,17 +17,19 @@ class Rename(commands.Cog):
     #when I react with peepolove it gives points
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
+        print("nick change")
         if before.nick != after.nick:
             user = self.db.get_discord_user(after.id)
             score = " [" + user.social_credit + "]"
             
+            print("nick change")
             #if Nickname still has score, dont change but save new nickname into db
             if after.nick.endsWith(score):
                 current = after.nick
                 current = current.removesuffix(score)
                 self.db.rename_discord_user(after.member_id, current)
                 return
-            self.db.change_credits(after, TransactionType.invalid_name_change, -20, "faulty rename") 
+            self.db.change_credits(after, TransactionType.invalid_name_change, reason="faulty rename") 
             
             
 

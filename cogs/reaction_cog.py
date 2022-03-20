@@ -7,6 +7,8 @@ from db import SQLiteDBManager
 
 from bot import discord_config
 
+from constants import TransactionType
+
 
 #ETH server emote ids
 #                  thx                  this                aww                 santaawww
@@ -26,11 +28,11 @@ class Reaction(commands.Cog):
             #ReactionUp Transaction
             if any(payload.emoji.id == s for s in GOOD_EMOTE_IDS):
                 messenger = payload.member.guild.get_channel(payload.channel_id).fetch_message(payload.message_id).author
-                self.db.change_credits(payload.member, 2, payload.message_id, payload.channel_id)
+                self.db.change_credits(payload.member, TransactionType.reaction_good, payload.message_id, payload.channel_id)
             elif any(payload.emoji.id == s for s in BAD_EMOTE_IDS):
                 #ReactionDown Transaction
                 messenger = payload.member.guild.get_channel(payload.channel_id).fetch_message(payload.message_id).author
-                self.db.change_credits(payload.member, 3, payload.message_id, payload.channel_id)
+                self.db.change_credits(payload.member, TransactionType.reaction_bad, payload.message_id, payload.channel_id)
                 
 
 # this code actually gets run when bot.load_extension(file) gets called on this file

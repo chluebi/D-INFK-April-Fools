@@ -74,10 +74,10 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
         sql_queries.append("""CREATE TABLE IF NOT EXISTS SocialCreditTransactions (
                                     SocialCreditTransactionId INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    SocialCreditTransactionTypeId INTEGER NOT NULL,
+                                    DiscordUserId INTEGER NOT NULL,
                                     Amount INTEGER NOT NULL,
                                     DateTime TEXT NOT NULL,
-                                    DiscordUserId INTEGER NOT NULL,
-                                    SocialCreditTransactionTypeId INTEGER NOT NULL,
                                     DiscordMessageId INTEGER NOT NULL,
                                     DiscordChannelId INTEGER NOT NULL,
                                     Reason TEXT NULL,
