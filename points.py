@@ -1,12 +1,20 @@
 import discord
-from db import SQLiteDBManager
 from db import DiscordUser
-from events import score_update
+from events import on_score_update
 
-def change_points(member: discord.Member, delta_score: int, reason):
-    #update db
+@on_score_update
+async def send_update(bot, member, user, delta_score, reason):
+    channel = bot.get_channel(954423559600631832)
+    await channel.send(f"{str(user)}'s score was changed to {user.social_credit}")
+    """"
+    #send amount changed + reason into channel
+    channel = member.guild.get_channel(954423559600631832)
+    update = 'added' if points>0 else 'removed'
+    channel.send(f'{member.mention} has gotten {points} {update}. Because of {reason}')
+    """
     
-    user = SQLiteDBManager.change_credits(member.id, 1, delta_score) 
+@on_score_update
+async def send_update(bot, member, user, delta_score, reason):
     #change nick with new value, nick char limit = 32
     nick = user.current_name
     points = " [" + user.social_credit + "]"
@@ -14,11 +22,3 @@ def change_points(member: discord.Member, delta_score: int, reason):
         nick[:32-points.length]
     nick += points
     member.edit(nick=nick)
-    
-    #send amount changed + reason into channel
-    channel = member.guild.get_channel(954423559600631832)
-    update = 'added' if points>0 else 'removed'
-    channel.send(f'{member.mention} has gotten {points} {update}. Because of {reason}')
-    
-    score_update(member, user.social_credit)
-    return
