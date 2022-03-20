@@ -129,7 +129,6 @@ class SQLiteDBManager(object):
         sql = f"""SELECT 
             DiscordUserId,
             UsernameOld,
-            UsernameCurrent,
             SocialCredit,
             IsBot,
             IsAdmin 
@@ -144,7 +143,7 @@ class SQLiteDBManager(object):
             if result is None:
                 return None
 
-            user = DiscordUser(result[0], result[1], result[2], result[3], result[4], result[5])
+            user = DiscordUser(result[0], result[1], result[2], result[3], result[4])
 
             #print(user)
 
