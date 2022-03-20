@@ -4,11 +4,10 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-alt-profanity-check = "*"
 discord = "*"
 psycopg2-binary = "*"
 pytz = "*"
-sklearn = "*"
+alt-profanity-check = "==1.0.1"
 
 [dev-packages]
 
