@@ -134,6 +134,20 @@ class Cog(commands.Cog):
         self.db.get_discord_user(1)
         await ctx.channel.send(f'db connected')
 
+
+    # db test
+    @commands.command(name='transactions')
+    async def get_transactions(self, ctx):
+        print("transactions")
+        transactions = self.db.get_last_transactions(ctx.author.id, 20)
+        print(transactions)
+        embed=discord.Embed(title=f"Social credit history of {ctx.author.display_name}", description="Your last transactions")
+        embed.set_author(name=ctx.author.display_name)
+
+        for transaction in transactions:
+            embed.add_field(name="Entry", value=f'ID:{transaction[0]} with {transaction[3]} at {transaction[4]} for {transaction[1]} with reason {transaction[7]}', inline=False)
+        await ctx.send(embed=embed)
+
     # db test
     @commands.command(name='sql')
     @commands.has_permissions(administrator=True)
