@@ -1,7 +1,8 @@
 import discord
 from typing import Union
 
-from db import DiscordUser
+from discord_user import DiscordUser
+
 
 functions_to_trigger = set()
 
