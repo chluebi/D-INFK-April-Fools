@@ -100,7 +100,8 @@ class SQLiteDBManager(object):
         VALUES 
         (1, 'AdminChange', NULL, 0),
         (2, 'ReactionUp', 1, 0),
-        (3, 'ReactionDown', -1, 0)"""
+        (3, 'ReactionDown', -1, 0),
+        (4, 'BirthdayWish', 20, 1)"""
 
         try:
             c = self._conn.cursor()
