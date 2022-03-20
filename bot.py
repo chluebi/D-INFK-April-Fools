@@ -15,9 +15,7 @@ from db import DiscordUser
 discord_config = util.parse_config('discord')
 
 # determining intents
-intents = discord.Intents.default()
-intents.members = True
-# intents.presences = True
+intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
 bot.db = SQLiteDBManager(discord_config["db_path"])
