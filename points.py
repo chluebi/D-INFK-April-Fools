@@ -4,10 +4,10 @@ from db import DiscordUser
 
 def change_points(member: discord.Member, delta_score: int, reason):
     #update db
-    return
-    user = db.change_credits(member.id, 1, delta_score) 
+    
+    user = SQLiteDBManager.change_credits(member.id, 1, delta_score) 
     #change nick with new value, nick char limit = 32
-    nick = user.old_name
+    nick = user.current_name
     points = " [" + user.social_credit + "]"
     if nick.length + points.length > 32:
         nick[:32-points.length]
