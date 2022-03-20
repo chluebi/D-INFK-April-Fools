@@ -85,6 +85,12 @@ class SQLiteDBManager(object, metaclass=Singleton):
                                     FOREIGN KEY (SocialCreditTransactionTypeId) REFERENCES SocialCreditTransactionTypes (SocialCreditTransactionId)
                                 );""")
 
+        sql_queries.append("""CREATE TABLE IF NOT EXISTS StoreKeyValuePairs (
+                                    Key TEXT UNIQUE,
+                                    Value TEXT NOT NULL,
+                                    Type TEXT NOT NULL
+                                );""")
+
         try:
             c = self._conn.cursor()
 
@@ -95,6 +101,17 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e)
 
+    def insert_key(self, key, value, type):
+        return
+    
+    def get_key(self, key, value, type):
+        return
+
+    def update_key(self, key, value, type):
+        return
+    
+    def delete_key(self, key, value, type):
+        return
 
     def insert_transaction_types(self):
 
@@ -162,6 +179,25 @@ class SQLiteDBManager(object, metaclass=Singleton):
             #print(user)
 
             return user
+        except Error as e:
+            print(e)
+
+
+    def get_last_transactions(self, discord_user_id, amount=25):
+
+        sql = f"""SELECT 
+            *
+        FROM SocialCreditTransactions WHERE DiscordUserId = {discord_user_id} ORDER BY DateTime DESC LIMIT {amount}"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+            print(sql)
+            results = c.fetchmany(amount)
+            #print(result)
+            if results is None:
+                return None
+            return results
         except Error as e:
             print(e)
 
