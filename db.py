@@ -28,7 +28,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         self._conn = None
         self._c = None
 
-        traceback.print_stack()
+        #traceback.print_stack()
 
         try:
             db_fname = self._path
