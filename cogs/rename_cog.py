@@ -24,11 +24,7 @@ class Rename(commands.Cog):
                 current = current.removesuffix(score)
                 SQLiteDBManager.rename_discord_user(after.member_id, current)
                 return
-            nick = user.current_name
-            if nick.length + score.length > 32:
-                nick[:32-score.length]
-            nick += score
-            after.edit(nick=nick)
+            SQLiteDBManager.change_credits(after, 1, -20, "faulty rename") 
             
             
 
