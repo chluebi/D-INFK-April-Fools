@@ -164,7 +164,20 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e)
 
+    def rename_discord_user(self, discord_user_id, new_name):
+        # TODO Prevent SQL Injection with name
+        try:
+            c = self._conn.cursor()
+            sql_update_user_name = f"""UPDATE DiscordUsers
+            SET CurrentUsername = {new_name}
+            WHERE DiscordUserId = {discord_user_id};"""
+            c.execute(sql_update_user_name)
 
+            self._conn.commit()
+
+            return self.get_discord_user(discord_user_id)
+        except Error as e:
+            print(e) 
 
     def change_credits(self, discord_user_id, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
 
