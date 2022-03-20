@@ -221,7 +221,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
             c.execute(sql_update_credits_history)
 
-
+            #call score_update from events.py here?
             self._conn.commit()
 
             return self.get_discord_user(discord_user_id)
