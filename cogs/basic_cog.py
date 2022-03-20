@@ -46,13 +46,21 @@ class Cog(commands.Cog):
         self.db.get_discord_user(1)
         await ctx.channel.send(f'db connected')
 
+    # db test
+    @commands.command(name='sql')
+    @commands.has_permissions(administrator=True)
+    async def sql_query(self, ctx, *, query):
+        result = self.db.sql_query(query)
+
+        await ctx.channel.send(result[:2000])
+
 
     # credits test
     @commands.command(name='credits')
     @commands.has_permissions(administrator=True)
     async def db_test(self, ctx):
 
-        db_user = self.db.change_credits(ctx.author.id, 2, None)
+        db_user = self.db.change_credits(ctx.author.id, 2, ctx.message.id, ctx.channel.id, reason="Test credits")
         # TODO Check None
         await ctx.channel.send(f'credits test {ctx.author.name} has {db_user.social_credit}')
 

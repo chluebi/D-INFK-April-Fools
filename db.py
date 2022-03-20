@@ -65,7 +65,8 @@ class SQLiteDBManager(object):
         sql_queries.append(""" CREATE TABLE IF NOT EXISTS SocialCreditTransactionTypes (
                                         SocialCreditTransactionTypeId INT UNIQUE,
                                         Name TEXT NOT NULL,
-                                        DefaultAmount INTEGER NULL
+                                        DefaultAmount INTEGER NULL,
+                                        AllowOnce INTEGER DEFAULT 0
                                     ); """)
 
         sql_queries.append("""CREATE TABLE IF NOT EXISTS SocialCreditTransactions (
@@ -95,11 +96,11 @@ class SQLiteDBManager(object):
 
         # TODO Check if exists
 
-        sql = f"""INSERT INTO SocialCreditTransactionTypes
+        sql = f"""INSERT INTO SocialCreditTransactionTypes (SocialCreditTransactionTypeId, Name, DefaultAmount, AllowOnce)
         VALUES 
-        (1, 'AdminChange', NULL),
-        (2, 'ReactionUp', 1),
-        (3, 'ReactionDown', -1)"""
+        (1, 'AdminChange', NULL, 0),
+        (2, 'ReactionUp', 1, 0),
+        (3, 'ReactionDown', -1, 0)"""
 
         try:
             c = self._conn.cursor()
@@ -107,6 +108,25 @@ class SQLiteDBManager(object):
             self._conn.commit()
         except Error as e:
             print(e)
+
+
+    def sql_query(self, query):
+        output = ""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(query)
+
+            results = c.fetchmany(50)
+            print(results)
+            #print(result)
+            for result in results:
+                output = output + str(result) + "\r\n"
+
+            return output
+        except Error as e:
+            print(e)
+
 
     def get_discord_user(self, discord_user_id):
 
@@ -136,10 +156,10 @@ class SQLiteDBManager(object):
         except Error as e:
             print(e)
 
-    def change_credits(self, discord_user_id, transaction_id, amount=None):
+    def change_credits(self, discord_user_id, transaction_type_id, discord_message_id, discord_channel_id, amount=None, reason=None):
 
         # TODO Pass with params to prevent injection
-        sql = f"""SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = {transaction_id}"""
+        sql = f"""SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = {transaction_type_id}"""
 
         try:
             c = self._conn.cursor()
@@ -155,18 +175,30 @@ class SQLiteDBManager(object):
             print(amount)
             
             if result is None:
-                print(f"transaction type {transaction_id} not found")
+                print(f"transaction type {transaction_type_id} not found")
                 return None
 
             if amount is None:
                 print(f"amount is None")
                 return None
 
+         
             sql_update_credits = f"""UPDATE DiscordUsers
             SET SocialCredit = SocialCredit + {amount}
-            WHERE DiscordUserId = {discord_user_id}"""
-
+            WHERE DiscordUserId = {discord_user_id};"""
             c.execute(sql_update_credits)
+
+
+        
+            sql_update_credits_history = f"""
+            INSERT INTO SocialCreditTransactions 
+            (Amount, SocialCreditTransactionTypeId, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
+            VALUES ({amount}, {transaction_type_id}, {discord_user_id}, {discord_message_id}, {discord_channel_id}, '{reason}');"""
+            print(sql_update_credits_history)
+
+            c.execute(sql_update_credits_history)
+
+
             self._conn.commit()
 
             return self.get_discord_user(discord_user_id)
