@@ -30,10 +30,12 @@ class transformerstuff(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         self.switch += 1
-        if self.switch == self.frac:
+        if self.switch == self.frac or len(message.content) >= 500:
             self.switch = 0
             return
         scores = self.emotional(message.content)
+        # At the moment this only looks out for unwanted emotions, we could also reward good emotions if wanted
+
         relevantscores = [scores[0][0]['score'], scores[0][1]['score'], scores[0][2]['score'], scores[0][5]['score']]
         disgustprob = scores[0][1]['score']
         fearprob = scores[0][2]['score']
