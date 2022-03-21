@@ -350,7 +350,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
             print(e) 
 
     def change_credits(self, member: discord.Member, transaction_type: TransactionType, from_discord_user_id = None, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
-        discord_user_id = member
+        discord_user_id = member.id
         print(transaction_type)
         transaction_type_id = transaction_type.value
         # TODO Pass with params to prevent injection

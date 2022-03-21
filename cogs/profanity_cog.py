@@ -7,7 +7,7 @@ from bot import discord_config
 from constants import TransactionType
 from profanity_check import predict, predict_prob
 
-class Reaction(commands.Cog):
+class profanity(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
@@ -16,12 +16,11 @@ class Reaction(commands.Cog):
 
     
     @commands.Cog.listener()
-    async def on_message(self, payload):
-        prob = predict_prob(payload.content)
+    async def on_message(self, message):
+        prob = predict_prob([message.content])[0]
         if(prob >= self.cutoff):
-            messenger = payload.member.guild.get_channel(payload.channel_id).fetch_message(payload.message_id).author
-            self.db.change_credits(payload.member, TransactionType.profanity, payload.message_id, payload.channel_id)
+            self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(Reaction(bot))
+    bot.add_cog(profanity(bot))
