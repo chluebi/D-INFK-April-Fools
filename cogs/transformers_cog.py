@@ -30,7 +30,7 @@ class transformerstuff(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         self.switch += 1
-        if self.switch == self.frac or len(message.content) >= 500:
+        if self.switch == self.frac or len(message.content) >= 500 or message.author.bot:
             self.switch = 0
             return
         scores = self.emotional(message.content)
@@ -43,9 +43,10 @@ class transformerstuff(commands.Cog):
 
         for i, score in enumerate(relevantscores):
             if score >= self.cutoff:
-                print("I dont like that you are: ",self.emotes[i])
+                tosend = "I dont like that you are showing " +self.emotes[i]+ " in your message, please refrain from doing so in the future "
                 #TODO: add in that it sends a message about how we don't like the emotion
                 self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
+                await message.reply(tosend)
 
 
 
