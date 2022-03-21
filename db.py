@@ -1,9 +1,12 @@
+from inspect import trace
 import sqlite3
 from sqlite3 import Error
 import traceback
 import discord
 
 from discord_user import DiscordUser
+from transaction import Transaction
+
 from events import score_update
 
 from constants import TransactionType
@@ -35,6 +38,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
             self.initalize_tables()
             self.insert_transaction_types()
+            self.insert_key_values()
         except:
             print("---- Error connecting to the database")
 
@@ -81,7 +85,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
                                     DiscordMessageId INTEGER NULL,
                                     DiscordChannelId INTEGER NULL,
                                     Reason TEXT NULL,
+                                    FromDiscordUserId INTEGER NULL,
                                     FOREIGN KEY (DiscordUserId) REFERENCES DiscordUsers (DiscordUserId),
+                                    FOREIGN KEY (FromDiscordUserId) REFERENCES DiscordUsers (DiscordUserId),
                                     FOREIGN KEY (SocialCreditTransactionTypeId) REFERENCES SocialCreditTransactionTypes (SocialCreditTransactionId)
                                 );""")
 
@@ -101,17 +107,120 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e)
 
-    def insert_key(self, key, value, type):
-        return
-    
-    def get_key(self, key, value, type):
-        return
+    def list_keys(self):
+        output = ""
+        try:
+            c = self._conn.cursor()
+            c.execute("SELECT * FROM StoreKeyValuePairs")
+            
+            results = c.fetchall()
 
-    def update_key(self, key, value, type):
-        return
+            for result in results:
+                output = output + str(result) + "\r\n"
+
+            return output
+        except Error as e:
+            print(e)
+        return None
+
+    def insert_key(self, key, value, type):
+        # If Key exists then update
+        if self.key_exists(key):
+            return self.update_key(key, value, type)
+
+        try:
+            c = self._conn.cursor()
+            c.execute("INSERT INTO StoreKeyValuePairs VALUES (?,?,?)", [key, value, type])
+            self._conn.commit()
+
+            return self.get_key(key)
+        except Error as e:
+            print(e)
+        return None
     
-    def delete_key(self, key, value, type):
-        return
+    def key_exists(self, key):
+        return self.get_key(key) is not None
+
+    def get_key(self, key):
+        try:
+            c = self._conn.cursor()
+            c.execute("SELECT * FROM StoreKeyValuePairs WHERE Key = ?", [key])
+            
+            result = c.fetchone()
+
+            if result is None:
+                return None
+
+            typeVal = result[2]
+            if typeVal == "str":
+                return result[1]
+            elif typeVal == "int":
+                return int(result[1])
+            elif typeVal == "bool":
+                return eval(result[1])
+
+            return result
+        except Error as e:
+            print(e)
+            traceback.print_stack()
+        return None
+
+    def update_key(self, key, value, type=None):
+        
+        # If Key doesnt exists then insert
+        if not self.key_exists(key):
+            if type is None:
+                return None
+            return self.insert_key(key, value, type)
+
+        try:
+            c = self._conn.cursor()
+
+            if type is None:
+                c.execute("UPDATE StoreKeyValuePairs SET Value = ? WHERE Key = ?", [value, key])
+            else:
+                c.execute("UPDATE StoreKeyValuePairs SET Value = ?, Type = ? WHERE Key = ?", [value, type, key])
+
+            self._conn.commit()
+            
+            return self.get_key(key)
+        except Error as e:
+            print(e)
+            traceback.print_stack()
+        return None
+    
+    def delete_key(self, key):
+        # If Key doesnt exists then dont do anything
+        if not self.key_exists(key):
+            return False
+
+        try:
+            c = self._conn.cursor()
+            c.execute("DELETE FROM WHERE Key = ?", [key])
+            self._conn.commit()
+
+            return True
+        except Error as e:
+            print(e)
+        
+        return False
+
+    def insert_key_values(self):
+
+        # TODO Check if exists
+
+        sql = f"""
+        INSERT INTO StoreKeyValuePairs
+        VALUES 
+        ('EnforceNameChange', 'False', 'bool')"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+            self._conn.commit()
+        except Error as e:
+            print(e)
+
 
     def insert_transaction_types(self):
 
@@ -127,8 +236,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (6, 'ReceiveGoodRep', 20, 1),
         (7, 'InvalidNameChange', -20, 1),
         (8, 'PlayGames', -1, 1),
-        (9, 'Mention1984', -20, 1)
-        (10, 'profanity', -10, 0)"""
+        (9, 'Mention1984', -20, 1),
+        (10, 'Profanity', -10, 0)"""
 
         try:
             c = self._conn.cursor()
@@ -146,9 +255,18 @@ class SQLiteDBManager(object, metaclass=Singleton):
             c.execute(query)
 
             results = c.fetchmany(50)
-     
+            names = list(map(lambda x: x[0], c.description))
+
+            output = "``"
+
+            # Header
+            for name in names:
+                output += name + "\t" 
+
+            output += "``" + "\r\n"
+
             for result in results:
-                output = output + str(result) + "\r\n"
+                output += str(result) + "\r\n"
 
             return output
         except Error as e:
@@ -186,8 +304,19 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
     def get_last_transactions(self, discord_user_id, amount=25):
 
-        sql = f"""SELECT 
-            *
+        transactions = []
+
+        sql = f"""
+        SELECT 
+            SocialCreditTransactionId,
+            SocialCreditTransactionTypeId,
+            DiscordUserId,
+            Amount,
+            DateTime,
+            DiscordMessageId,
+            DiscordChannelId,
+            Reason,
+            FromDiscordUserId
         FROM SocialCreditTransactions WHERE DiscordUserId = {discord_user_id} ORDER BY DateTime DESC LIMIT {amount}"""
 
         try:
@@ -198,7 +327,11 @@ class SQLiteDBManager(object, metaclass=Singleton):
             #print(result)
             if results is None:
                 return None
-            return results
+
+            for result in results:
+                transactions.append(Transaction(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]))
+
+            return transactions
         except Error as e:
             print(e)
 
@@ -216,7 +349,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e) 
 
-    def change_credits(self, member: discord.Member, transaction_type: TransactionType, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
+    def change_credits(self, member: discord.Member, transaction_type: TransactionType, from_discord_user_id = None, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
         discord_user_id = member
         print(transaction_type)
         transaction_type_id = transaction_type.value
@@ -255,8 +388,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
  
             c.execute("""
             INSERT INTO SocialCreditTransactions 
-            (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
-            VALUES (?, ?, datetime(), ?, ?, ?, ?);""", (amount, transaction_type_id, discord_user_id, discord_message_id, discord_channel_id, reason))
+            (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, FromDiscordUserId, DiscordMessageId, DiscordChannelId, Reason)
+            VALUES (?, ?, datetime(), ?, ?, ?, ?, ?);""", (amount, transaction_type_id, discord_user_id, from_discord_user_id, discord_message_id, discord_channel_id, reason))
 
             self._conn.commit()
             
@@ -266,7 +399,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
             
             user = self.get_discord_user(discord_user_id)
             ## ImportError: cannot import name 'score_update' from partially initialized module 'events' (most likely due to a circular import)
-            #score_update(member, user, amount, reason)
+            score_update(member, user, amount, reason)
             
             return user
         except Error as e:
