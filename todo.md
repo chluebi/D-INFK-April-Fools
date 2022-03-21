@@ -31,6 +31,6 @@ Make button with Ignore, Remove x points by pressing
 - disable automatic stuff if it doesnt work as intended anymore or limits bot with ratelimit too much?
 
 ## ML stuff
-- add text obscenity detection
-- Maybe add image nsfw detection?
-  - Dont do that, people will send nsfw images on purpose :kekyep:
+- Gather lists of sentences for the Sentence similiarity model
+- Make the emotional classification model say something when it detects unwanted emotions
+-  Maybe reward wanted emotions?
