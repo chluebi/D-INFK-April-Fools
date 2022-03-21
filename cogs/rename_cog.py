@@ -17,6 +17,12 @@ class Rename(commands.Cog):
     #when I react with peepolove it gives points
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+
+        enable_rename = self.db.get_key("EnforceNameChange")
+
+        if enable_rename is False:
+            return
+
         if before.display_name != after.display_name:
             user = self.db.get_discord_user(after.id)
             score = " [" + str(user.social_credit) + "]"

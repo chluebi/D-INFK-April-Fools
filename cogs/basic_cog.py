@@ -122,6 +122,35 @@ class Cog(commands.Cog):
         except Exception as e:
             print(e)
 
+    # db test
+    @commands.command(name='addkeyvalue')
+    @commands.has_permissions(administrator=True)
+    async def add_keyvalue(self, ctx, key, value, type):
+        returnedValue = self.db.insert_key(key, value, type)
+        await ctx.channel.send(key + " set to: " + str(returnedValue))
+
+    # db test
+    @commands.command(name='updatekeyvalue')
+    @commands.has_permissions(administrator=True)
+    async def update_keyvalue(self, ctx, key, value):
+        returnedValue = self.db.update_key(key, value)
+        await ctx.channel.send(key + " set to: " + str(returnedValue))
+
+    # db test
+    @commands.command(name='allkeyvalues')
+    @commands.has_permissions(administrator=True)
+    async def all_keyvalues(self, ctx):
+        allKeys = self.db.list_keys()
+        await ctx.channel.send(allKeys)
+
+
+    # db test
+    @commands.command(name='keyvalue')
+    @commands.has_permissions(administrator=True)
+    async def keyvalue(self, ctx, name):
+        value = self.db.get_key(name)
+
+        await ctx.channel.send(value)
 
 
     # db test
@@ -139,13 +168,26 @@ class Cog(commands.Cog):
     @commands.command(name='transactions')
     async def get_transactions(self, ctx):
         print("transactions")
-        transactions = self.db.get_last_transactions(ctx.author.id, 20)
+        transactions = self.db.get_last_transactions(ctx.author.id, 10)
         print(transactions)
-        embed=discord.Embed(title=f"Social credit history of {ctx.author.display_name}", description="Your last transactions")
+        embed=discord.Embed(title=f"Social credit history of {ctx.author.display_name}")
         embed.set_author(name=ctx.author.display_name)
 
+        description = """**Your last transactions**""" + "\r\n"
         for transaction in transactions:
-            embed.add_field(name="Entry", value=f'ID:{transaction[0]} with {transaction[3]} at {transaction[4]} for {transaction[1]} with reason {transaction[7]}', inline=False)
+
+            if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
+                link = f"https://discord.com/channels/954423559600631829/{transaction.discord_channel_id}/{transaction.discord_message_id}"
+                entry = f'ID:{transaction.id} with [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits with reason {transaction.reason}'
+                description += entry + "\r\n"
+            else:
+                entry = f'ID:{transaction.id} with **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits with reason {transaction.reason}'
+                description += entry + "\r\n"
+
+
+        embed.description = description
+        #for transaction in transactions:
+        #    embed.add_field(name="Entry", value="", inline=False)
         await ctx.send(embed=embed)
 
     # db test
@@ -161,8 +203,8 @@ class Cog(commands.Cog):
     @commands.command(name='credits')
     @commands.has_permissions(administrator=True)
     async def db_test(self, ctx):
-
-        db_user = self.db.change_credits(ctx.author.id, TransactionType.birthday_wish, ctx.message.id, ctx.channel.id, reason="Test credits")
+        print(ctx.channel.id)
+        db_user = self.db.change_credits(ctx.author.id, TransactionType.birthday_wish, discord_message_id=ctx.message.id, discord_channel_id=ctx.channel.id, reason="Test credits")
         # TODO Check None
         await ctx.channel.send(f'credits test {ctx.author.display_name} has {db_user.social_credit}')
 
