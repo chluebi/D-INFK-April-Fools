@@ -237,7 +237,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (7, 'InvalidNameChange', -20, 1),
         (8, 'PlayGames', -1, 1),
         (9, 'Mention1984', -20, 1),
-        (10, 'Profanity', -10, 0)"""
+        (10, 'Profanity', -10, 0),
+        (11, 'Emotions', -5 , 0)"""
 
         try:
             c = self._conn.cursor()

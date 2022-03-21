@@ -8,6 +8,8 @@ discord = "*"
 psycopg2-binary = "*"
 pytz = "*"
 alt-profanity-check = "==1.0.1"
+transformers = "*"
+torch = "*"
 
 [dev-packages]
 

@@ -12,5 +12,6 @@ class TransactionType(Enum):
     play_game = 8
     mention_1984 = 9
     profanity = 10
+    emotions = 11
 
 
