@@ -237,7 +237,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (7, 'InvalidNameChange', -20, 1),
         (8, 'PlayGames', -1, 1),
         (9, 'Mention1984', -20, 1),
-        (10, 'Profanity', -10, 0)"""
+        (10, 'Profanity', -10, 0),
+        (11, 'RevertTransaction', 0, 0)"""
 
         try:
             c = self._conn.cursor()
@@ -332,6 +333,34 @@ class SQLiteDBManager(object, metaclass=Singleton):
                 transactions.append(Transaction(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8]))
 
             return transactions
+        except Error as e:
+            print(e)
+
+    def get_transaction_by_id(self, transaction_id):
+
+        sql = f"""
+        SELECT 
+            SocialCreditTransactionId,
+            SocialCreditTransactionTypeId,
+            DiscordUserId,
+            Amount,
+            DateTime,
+            DiscordMessageId,
+            DiscordChannelId,
+            Reason,
+            FromDiscordUserId
+        FROM SocialCreditTransactions WHERE SocialCreditTransactionId = {transaction_id}"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+            print(sql)
+            result = c.fetchone()
+            #print(result)
+            if result is None:
+                return None
+
+            return Transaction(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8])
         except Error as e:
             print(e)
 

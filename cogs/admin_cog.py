@@ -4,6 +4,7 @@ import logging
 import traceback
 import discord
 from discord.ext import commands
+from constants import TransactionType
 
 # local imports
 import util
@@ -35,6 +36,7 @@ class Admin(commands.Cog):
             embed.add_field(name="admin updatekey <key> <value>", value=f"Update Key value pair", inline=False)
             embed.add_field(name="admin allkeys", value=f"Get all key value pairs", inline=False)
             embed.add_field(name="admin sql <query>", value=f"BattleRush's playground", inline=False)
+            embed.add_field(name="admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')
@@ -119,7 +121,31 @@ class Admin(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def sql_query(self, ctx, *, query):
         result = self.db.sql_query(query)
-        await ctx.channel.send(result[:2000])
+        await ctx.channel.send(result[:2000])    
+        
+    @admin.command(name='reverttransaction')
+    @commands.has_permissions(manage_channels=True)
+    async def revert_transaction(self, ctx, id):
+
+        transaction = self.db.get_transaction_by_id(id)
+        if transaction is None:
+            await ctx.channel.send(f"Transaction with Id: {id} not found")
+            return
+
+
+        #print(transaction)
+
+        member = ctx.guild.get_member(transaction.discord_user_id)
+        if member is None:
+            await ctx.channel.send(f"Member with Id: {id} not found")
+            return
+            
+        #print(member)
+
+        result = self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
+        ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
+        await ctx.channel.send(f"Transaction with Id: {id} was reverted")
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Admin(bot))
