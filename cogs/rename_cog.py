@@ -14,7 +14,6 @@ class Rename(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-    #when I react with peepolove it gives points
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
 
