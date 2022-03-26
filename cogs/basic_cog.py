@@ -41,127 +41,21 @@ class Cog(commands.Cog):
     async def admin_ping(self, ctx):
         await ctx.channel.send(f'{ctx.author.mention}, you are an admin :)')
 
+
+
+
+
+
+
     # db test
-    @commands.command(name='loadusers')
-    @commands.has_permissions(administrator=True)
-    async def load_users(self, ctx):
+    #@commands.command(name='dbtest')
+    #@commands.has_permissions(administrator=True)
+    #async def db_test(self, ctx):
         
+    #    self.db.initalize_tables()
 
-        for member in ctx.guild.members:
-            db_user = self.db.get_discord_user(member.id)
-        
-            if db_user is None:
-                #await ctx.channel.send(f"unknown user {member.name} creating")
-                #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
-                
-                await ctx.channel.send(f"{member.name} created")
-
-
-    # enforce naming
-    @commands.command(name='enforcenames')
-    @commands.has_permissions(administrator=True)
-    async def enforce_names(self, ctx):
-        try:
-            for member in ctx.guild.members:
-                db_user = self.db.get_discord_user(member.id)
-
-
-            
-                if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.display_name} creating")
-                    #TODO check Name and Nick
-
-                    
-                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
-                    
-                    await ctx.channel.send(f"{member.display_name} created")
-                
-                credits = str(db_user.social_credit)
-                
-                nick = f'{member.display_name[:25]} [{credits}]'
-
-        
-
-                result = await member.edit(nick=nick)
-
-
-        except Exception as e:
-            print(e)
-    
-    # restore names
-    @commands.command(name='restorenames')
-    @commands.has_permissions(administrator=True)
-    async def restore_names(self, ctx):
-        
-        try:
-            for member in ctx.guild.members:
-                db_user = self.db.get_discord_user(member.id)
-
-                print(db_user)
-                print(member)
-            
-                if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.name} creating")
-                    #TODO check Name and Nick
-
-                    print(member)
-                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
-                    
-                    await ctx.channel.send(f"{member.display_name} created")
-                
-
-                
-                nick = db_user.old_name
-
-                print(nick)
-
-                result = await member.edit(nick=nick)
-                print(result)
-
-        except Exception as e:
-            print(e)
-
-    # db test
-    @commands.command(name='addkeyvalue')
-    @commands.has_permissions(administrator=True)
-    async def add_keyvalue(self, ctx, key, value, type):
-        returnedValue = self.db.insert_key(key, value, type)
-        await ctx.channel.send(key + " set to: " + str(returnedValue))
-
-    # db test
-    @commands.command(name='updatekeyvalue')
-    @commands.has_permissions(administrator=True)
-    async def update_keyvalue(self, ctx, key, value):
-        returnedValue = self.db.update_key(key, value)
-        await ctx.channel.send(key + " set to: " + str(returnedValue))
-
-    # db test
-    @commands.command(name='allkeyvalues')
-    @commands.has_permissions(administrator=True)
-    async def all_keyvalues(self, ctx):
-        allKeys = self.db.list_keys()
-        await ctx.channel.send(allKeys)
-
-
-    # db test
-    @commands.command(name='keyvalue')
-    @commands.has_permissions(administrator=True)
-    async def keyvalue(self, ctx, name):
-        value = self.db.get_key(name)
-
-        await ctx.channel.send(value)
-
-
-    # db test
-    @commands.command(name='dbtest')
-    @commands.has_permissions(administrator=True)
-    async def db_test(self, ctx):
-        
-        self.db.initalize_tables()
-
-        self.db.get_discord_user(1)
-        await ctx.channel.send(f'db connected')
+    #    self.db.get_discord_user(1)
+    #    await ctx.channel.send(f'db connected')
 
 
     # db test
@@ -190,13 +84,7 @@ class Cog(commands.Cog):
         #    embed.add_field(name="Entry", value="", inline=False)
         await ctx.send(embed=embed)
 
-    # db test
-    @commands.command(name='sql')
-    @commands.has_permissions(administrator=True)
-    async def sql_query(self, ctx, *, query):
-        result = self.db.sql_query(query)
 
-        await ctx.channel.send(result[:2000])
 
 
     # credits test
