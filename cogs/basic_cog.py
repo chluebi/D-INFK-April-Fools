@@ -92,7 +92,7 @@ class Cog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def db_test(self, ctx):
         print(ctx.channel.id)
-        db_user = self.db.change_credits(ctx.author, TransactionType.birthday_wish, discord_message_id=ctx.message.id, discord_channel_id=ctx.channel.id, reason="Test credits")
+        db_user = await self.db.change_credits(ctx.author, TransactionType.birthday_wish, discord_message_id=ctx.message.id, discord_channel_id=ctx.channel.id, reason="Test credits")
         # TODO Check None
         await ctx.channel.send(f'credits test {ctx.author.display_name} has {db_user.social_credit}')
 

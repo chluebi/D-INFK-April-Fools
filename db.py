@@ -378,7 +378,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e) 
 
-    def change_credits(self, member: discord.Member, transaction_type: TransactionType, from_discord_user_id = None, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
+    async def change_credits(self, member: discord.Member, transaction_type: TransactionType, from_discord_user_id = None, discord_message_id=None, discord_channel_id=None, amount=None, reason=None):
         discord_user_id = member.id
         print(transaction_type)
         transaction_type_id = transaction_type.value
@@ -428,7 +428,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
             
             user = self.get_discord_user(discord_user_id)
             ## ImportError: cannot import name 'score_update' from partially initialized module 'events' (most likely due to a circular import)
-            score_update(member, user, amount, reason)
+            await score_update(member, user, amount, reason)
             
             return user
         except Error as e:
