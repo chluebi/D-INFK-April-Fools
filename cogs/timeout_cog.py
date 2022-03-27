@@ -20,7 +20,7 @@ class Role(commands.Cog):
     async def timeout(self, member: discord.Member, user: DiscordUser, delta_score: int, reason):
         if user.social_credit > 0 or member.messenger.guild_permissions.admin:
             return
-        channel = member.guild.get_channel(34234)
+        channel = member.guild.get_channel(954423559600631832)
         channel.send(f'timeout: {member.id} This is a timeout for {member.mention}')
         amount = -1 * user.social_credit + 250
         await self.db.change_credits(member=member, TransactionType=TransactionType.timeout, amount=amount, reason="Timeout")
