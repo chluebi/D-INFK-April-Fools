@@ -8,19 +8,19 @@ class Judge(commands.Cog):
         self.db = bot.db
     
     @commands.command()
-    @commands.has_any_role(957344554569310239, 957592832108011580)
+    @commands.has_any_role(957344554569310239, 957592832108011580)  # judge role on test and main server
     @commands.cooldown(1, 120, commands.BucketType.member)
     @commands.guild_only()
     async def judge(self, ctx, member: discord.Member, score_update = 0):
         if member is None:
-            await ctx.reply("No victim chosen to judge.")
+            await ctx.reply("No victim chosen to judge.", delete_after=10)
             return
         if member.id == ctx.author.id:
             await ctx.reply("It is illegal to change your own score! -20 for even trying!")
             await self.db.change_credits(member, TransactionType.judge_manual, ctx.message.id, ctx.channel.id, amount=-20, reason="Tried to increase their own score")
             return
         if score_update == 0:
-            await ctx.reply("Changing the score by 0 doesn't make any sense.")
+            await ctx.reply("Changing the score by 0 doesn't make any sense.", delete_after=10)
             return
         if score_update < -20:
             score_update = -20
