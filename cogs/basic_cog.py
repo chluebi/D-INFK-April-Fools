@@ -104,19 +104,6 @@ class Cog(commands.Cog):
             ctx.message.id, ctx.channel.id, None, f"Mentioned 1984")
             await ctx.channel.send(f"You are using not allowed mentions")
 
-    # triggers the on_score_update event
-    @commands.command()
-    async def event(self, ctx, delta_score = 0):
-        db_user = self.db.get_discord_user(ctx.message.author.id)
-        await score_update(ctx.message.author, db_user, delta_score, "Event was triggered")
-    
-    # gets triggered with the on_score_update event
-    @on_score_update
-    async def foobar(bot, member, user, delta_score, reason):
-        changelog_channel_id = bot.db.get_key("ChangelogChannelId")
-        channel = bot.get_channel(changelog_channel_id)
-        await channel.send(f"{str(member)}'s score was changed by {delta_score}")
-
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here
