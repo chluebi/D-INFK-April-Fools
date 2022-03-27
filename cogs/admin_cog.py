@@ -125,26 +125,45 @@ class Admin(commands.Cog):
         
     @admin.command(name='reverttransaction')
     @commands.has_permissions(manage_channels=True)
-    async def revert_transaction(self, ctx, id):
+    async def revert_transaction(self, ctx, id: int):
+        print('.admin reverttransaction 1')
+        try:
+            transaction = self.db.get_transaction_by_id(id)
+            if transaction is None:
+                await ctx.channel.send(f"Transaction with Id: {id} not found")
+                return
 
-        transaction = self.db.get_transaction_by_id(id)
-        if transaction is None:
-            await ctx.channel.send(f"Transaction with Id: {id} not found")
-            return
+            member = ctx.guild.get_member(transaction.discord_user_id)
+            if member is None:
+                await ctx.channel.send(f"Member with Id: {id} not found")
+                return
+
+            result = self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
+            ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
+            await ctx.channel.send(f"Transaction with Id: {id} was reverted")
+        except Exception as e:
+            print(e)
 
 
-        #print(transaction)
+    @admin.command(name='credits')
+    @commands.has_permissions(manage_channels=True)
+    async def admin_credits(self, ctx, member: discord.Member, transaction_type, amount: int, reason=None):
 
-        member = ctx.guild.get_member(transaction.discord_user_id)
-        if member is None:
-            await ctx.channel.send(f"Member with Id: {id} not found")
-            return
-            
-        #print(member)
+        print(member)
+        print(transaction_type)
+        print(amount)
+        print(reason)
 
-        result = self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
-        ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
-        await ctx.channel.send(f"Transaction with Id: {id} was reverted")
+        if amount < 0:
+            amount = None
+
+        result = await self.db.change_credits(member, TransactionType(transaction_type), 
+        from_discord_user_id=ctx.author.id,
+        discord_message_id=ctx.message.id, 
+        discord_channel_id=ctx.channel.id,
+        amount=amount,
+        reason=reason)
+        await ctx.channel.send(f"Added credits")
 
 
 def setup(bot: commands.Bot):
