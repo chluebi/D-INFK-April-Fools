@@ -13,5 +13,6 @@ class TransactionType(Enum):
     mention_1984 = 9
     profanity = 10
     revert_transaction = 11
+    judge_manual = 12
 
 
