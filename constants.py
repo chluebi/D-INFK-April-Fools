@@ -14,5 +14,6 @@ class TransactionType(Enum):
     profanity = 10
     revert_transaction = 11
     judge_manual = 12
+    timeout = 13
 
 

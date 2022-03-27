@@ -43,7 +43,6 @@ class Role(commands.Cog):
         if new_role != None:
             await member.add_roles(new_role)
 
-# this code actually gets run when bot.load_extension(file) gets called on this file
-# all cogs that should be loaded need to be added in here
-def setup(bot: commands.Bot):
-    bot.add_cog(Role(bot))
+# simply here cause its considered a cog
+def setup(bot):
+    pass
