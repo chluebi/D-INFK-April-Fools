@@ -61,7 +61,15 @@ async def on_command_error(ctx, error):
         await ctx.message.add_reaction('❌')
         return
 
-    if (isinstance(error, commands.errors.UserNotFound)):
+    if (isinstance(error, commands.errors.UserNotFound) or isinstance(error, commands.errors.MemberNotFound)):
+        await ctx.message.add_reaction('❌')
+        return
+
+    if (isinstance(error, commands.CommandOnCooldown)):
+        await ctx.message.reply(f"Command on Cooldown. {int(error.retry_after)} seconds remaining...", delete_after=5)
+        return
+    
+    if (isinstance(error, commands.errors.BadArgument)):
         await ctx.message.add_reaction('❌')
         return
 
