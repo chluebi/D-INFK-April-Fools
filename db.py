@@ -230,9 +230,10 @@ class SQLiteDBManager(object, metaclass=Singleton):
         sql = f"""
         INSERT INTO StoreKeyValuePairs
         VALUES 
-        ('EnforceNameChange', 'False', 'bool'),
+        ('RemovePointsOnRename', 'False', 'bool'),
         ('DiscordServerId', 954423559600631829, 'int'),
-        ('ChangelogChannelId', 954423559600631832, 'int')"""
+        ('ChangelogChannelId', 954423559600631832, 'int'),
+        ('ScoreNameChange', 'False', 'bool')"""
 
         try:
             c = self._conn.cursor()

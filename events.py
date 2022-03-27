@@ -20,6 +20,5 @@ def on_score_update(func):
 # decorator are also triggered
 async def score_update(member: discord.Member, user: DiscordUser, delta_score: int, reason):
     print("event fire")
-    print(functions_to_trigger)
     for f in functions_to_trigger:
         await f(bot[0], member, user, delta_score, reason)
