@@ -4,11 +4,12 @@ import discord
 import events
 from discord.ext import commands
 from db import SQLiteDBManager
+from discord.utils import get
 
 from bot import discord_config
 
 from constants import TransactionType
-
+from profanity_check import predict, predict_prob
 from transformers import pipeline
 
 class transformerstuff(commands.Cog):
@@ -19,7 +20,7 @@ class transformerstuff(commands.Cog):
         self.cutoff = 0.5
         self.switch = 0
         #the fraction of messages we analyze
-        self.frac = 2
+        self.frac = 3
         self.emotes = {
             0 : "anger",
             1 : "disgust",
@@ -29,6 +30,11 @@ class transformerstuff(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
+        prob = predict_prob([message.content])[0]
+        if(prob >= self.cutoff):
+            self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
+            await message.add_reaction("<:badlang:957425440857939978>")
+            return
         self.switch += 1
         if self.switch == self.frac or len(message.content) >= 500 or message.author.bot:
             self.switch = 0
@@ -43,10 +49,9 @@ class transformerstuff(commands.Cog):
 
         for i, score in enumerate(relevantscores):
             if score >= self.cutoff:
-                tosend = "I dont like that you are showing " +self.emotes[i]+ " in your message, please refrain from doing so in the future "
                 #TODO: add in that it sends a message about how we don't like the emotion
                 self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
-                await message.reply(tosend)
+                await message.add_reaction("<:Illegalemotion:957425440342020197>")
 
 
 
