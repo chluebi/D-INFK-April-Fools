@@ -419,7 +419,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
         try:
             c = self._conn.cursor()
-            c.execute("SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = ?", transaction_type_id)
+            c.execute("SELECT * FROM SocialCreditTransactionTypes WHERE SocialCreditTransactionTypeId = ?", (transaction_type_id, ))
             result = c.fetchone()
 
             # If no amount is provided take the default for this type
