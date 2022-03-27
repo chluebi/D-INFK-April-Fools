@@ -323,7 +323,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         try:
             c = self._conn.cursor()
             c.execute(sql)
-            print(sql)
+            #print(sql)
             results = c.fetchmany(amount)
             #print(result)
             if results is None:
@@ -354,7 +354,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         try:
             c = self._conn.cursor()
             c.execute(sql)
-            print(sql)
+            #print(sql)
             result = c.fetchone()
             #print(result)
             if result is None:

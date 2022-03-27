@@ -1,13 +1,13 @@
 import asyncio
 
 import discord
-import events
+
 from discord.ext import commands
 from db import SQLiteDBManager
 from db import DiscordUser
 
 from constants import TransactionType
-
+from events import on_score_update, score_update
 
 class Rename(commands.Cog):
     def __init__(self, bot):
@@ -33,11 +33,11 @@ class Rename(commands.Cog):
                 self.db.rename_discord_user(after.id, current)
                 return
 
-            self.db.change_credits(after.id, TransactionType.invalid_name_change, reason=f"Faulty rename from '{before.nick}' to '{after.nick}'") 
+            self.db.change_credits(after, TransactionType.invalid_name_change, reason=f"Faulty rename from '{before.nick}' to '{after.nick}'") 
             
     #updates the user with the correct score again, if there score got updated or they did a faulty rename
-    @events.on_score_update
-    async def rename_member(member: discord.Member, user: DiscordUser, delta_score: int, reason):
+    @on_score_update
+    async def rename_member(bot, member: discord.Member, user: DiscordUser, delta_score: int, reason):
         # Reload the new credits
         score = " [" + str(user.social_credit) + "]"
         new_name = user.current_name[:25]+score
