@@ -17,7 +17,7 @@ class Role(commands.Cog):
             
     #updates the user with the correct role again after a score change
     @on_score_update
-    async def give_role(member: discord.Member, user: DiscordUser, delta_score: int, reason):
+    async def give_role(bot, member: discord.Member, user: DiscordUser, delta_score: int, reason):
         
         if not member.top_role.name.isdigit():
             return
@@ -43,7 +43,6 @@ class Role(commands.Cog):
         if new_role != None:
             await member.add_roles(new_role)
 
-# this code actually gets run when bot.load_extension(file) gets called on this file
-# all cogs that should be loaded need to be added in here
-def setup(bot: commands.Bot):
-    bot.add_cog(Role(bot))
+# simply here cause its considered a cog
+def setup(bot):
+    pass
