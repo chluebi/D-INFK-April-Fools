@@ -26,6 +26,32 @@ class Reaction(commands.Cog):
 
     #when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
     @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        #exclude not guild, not custom emoji, if user self reacts to own message
+        if user.guild is None or not reaction.custom_emoji or reaction.message.author.id == user.id:
+            return
+        
+        messenger = reaction.message.author
+        message_id = reaction.message.id
+        channel_id = reaction.message.channel.id
+        #if messenger is staff, give +-points to reactee
+        if messenger.guild_permissions.manage_channels:
+            messenger = user
+        
+        #ReactionUp Transaction
+        if any(reaction.emoji.id == s for s in GOOD_EMOTE_IDS):
+            await self.db.change_credits(messenger, TransactionType.reaction_good, message_id, channel_id)
+        #ReactionDown Transaction
+        elif any(reaction.emoji.id == s for s in BAD_EMOTE_IDS):
+            await self.db.change_credits(messenger, TransactionType.reaction_bad, message_id, channel_id)
+        #TAapproved
+        elif reaction.emoji.id == TA_APPROVED:
+            await self.db.change_credits(messenger, TransactionType.ta_approved, message_id, channel_id)
+
+# old raw reaction code 
+"""
+    #when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.member is not None:
             #ReactionUp Transaction
@@ -44,6 +70,7 @@ class Reaction(commands.Cog):
         channel = self.bot.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         return message.author
+"""
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here
