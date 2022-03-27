@@ -22,23 +22,23 @@ class Role(commands.Cog):
         score = user.social_credit
         if score > 2000:
             score = 2000
-        if score < 0:
-            score = 0
+        if score <= 0:
+            score = 1
         
         role_score = int(member.top_role.name)    
         if role_score <= score & score <= role_score+99:
             return
         
+        score = (score // 100) * 100
         new_role = None
         for role in member.guild.roles:
-            if role.name.isdigit() & int(role.name)==score:
+            if role.name.isdigit() and int(role.name)==score:
                 new_role = role
                 break
         
-        member.remove_roles(member.top_role)
+        await member.remove_roles(member.top_role)
         if new_role != None:
-            member.add_roles(new_role)
-        
+            await member.add_roles(new_role)
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here
