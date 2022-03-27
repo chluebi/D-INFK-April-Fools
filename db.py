@@ -10,6 +10,9 @@ from transaction import Transaction
 from events import score_update
 
 from constants import TransactionType
+import io
+import os
+from datetime import datetime
 
 class Singleton(type):
     _instances = {}
@@ -20,8 +23,9 @@ class Singleton(type):
 
 class SQLiteDBManager(object, metaclass=Singleton):
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, backup_path=None):
         self._path = path
+        self._backup_path = backup_path
 
         self.dbON = False 
         self._conn = None
@@ -222,6 +226,36 @@ class SQLiteDBManager(object, metaclass=Singleton):
             print(e)
 
 
+    def backup_db(self):
+        try:
+            now = datetime.now() # current date and time
+            now_string = now.strftime("%Y_%m_%d_%H_%M_%S")
+            
+            print(self._backup_path)
+            if not os.path.exists(self._backup_path):
+                os.makedirs(self._backup_path)
+
+
+            with io.open(os.path.join(self._backup_path, str('backup_' + now_string + '.sql')), 'w') as p: 
+                    
+                # iterdump() function
+                for line in self._conn.iterdump(): 
+                    
+                    p.write('%s\n' % line)
+
+
+            bck = sqlite3.connect(os.path.join(self._backup_path, str('backup_' + now_string + '.db')))
+            with bck:
+                self._conn.backup(bck, pages=1)
+            self._conn.commit()
+            bck.close()
+
+            print('Backup performed successfully!')
+        except Exception as e:
+            print(e)
+            traceback.print_stack
+
+
     def insert_transaction_types(self):
 
         # TODO Check if exists
@@ -251,6 +285,10 @@ class SQLiteDBManager(object, metaclass=Singleton):
 
     def sql_query(self, query):
         output = ""
+        print(query)
+        if query == "backup":
+            self.backup_db()
+            return
 
         try:
             c = self._conn.cursor()

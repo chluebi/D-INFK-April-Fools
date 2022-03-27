@@ -123,13 +123,13 @@ class Admin(commands.Cog):
     @admin.command(name='sql')
     @commands.has_permissions(manage_channels=True)
     async def sql_query(self, ctx, *, query):
+        print(query + "as query")
         result = self.db.sql_query(query)
         await ctx.channel.send(result[:2000])    
         
     @admin.command(name='reverttransaction')
     @commands.has_permissions(manage_channels=True)
     async def revert_transaction(self, ctx, id: int):
-        print('.admin reverttransaction 1')
         try:
             transaction = self.db.get_transaction_by_id(id)
             if transaction is None:
@@ -141,7 +141,7 @@ class Admin(commands.Cog):
                 await ctx.channel.send(f"Member with Id: {id} not found")
                 return
 
-            result = self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
+            result = await self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
             ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
             await ctx.channel.send(f"Transaction with Id: {id} was reverted")
         except Exception as e:

@@ -18,7 +18,7 @@ discord_config = util.parse_config('discord')
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
-bot.db = SQLiteDBManager(discord_config["db_path"])
+bot.db = SQLiteDBManager(discord_config["db_path"], discord_config["backup_path"])
 
 '''
 basic logging

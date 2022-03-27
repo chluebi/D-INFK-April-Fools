@@ -1,5 +1,6 @@
 {
     "prefix":"",
     "token":"",
-    "db_path": ""
+    "db_path": "",
+    "backup_path": ""
 }
