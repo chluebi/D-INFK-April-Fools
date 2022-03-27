@@ -14,7 +14,8 @@ async def send_update(bot, member, user, delta_score, reason):
     if abs(delta_score) < 5:
         return
     
-    channel = bot.get_channel(CHANGELOG_CHANNEL)
+    changelog_channel_id = bot.db.get_key("ChangelogChannelId")
+    channel = bot.get_channel(changelog_channel_id)
     color = discord.Color.green()
     emote = POS_SCORE_EMOTE
     if delta_score < 0:

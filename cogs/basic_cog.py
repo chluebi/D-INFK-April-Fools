@@ -42,28 +42,13 @@ class Cog(commands.Cog):
         await ctx.channel.send(f'{ctx.author.mention}, you are an admin :)')
 
 
-
-
-
-
-
-    # db test
-    #@commands.command(name='dbtest')
-    #@commands.has_permissions(administrator=True)
-    #async def db_test(self, ctx):
-        
-    #    self.db.initalize_tables()
-
-    #    self.db.get_discord_user(1)
-    #    await ctx.channel.send(f'db connected')
-
-
     # db test
     @commands.command(name='transactions')
     async def get_transactions(self, ctx):
-        print("transactions")
+        
+        server_id = self.db.get_key("DiscordServerId")
+
         transactions = self.db.get_last_transactions(ctx.author.id, 10)
-        print(transactions)
         embed=discord.Embed(title=f"Social credit history of {ctx.author.display_name}")
         embed.set_author(name=ctx.author.display_name)
 
@@ -71,11 +56,11 @@ class Cog(commands.Cog):
         for transaction in transactions:
 
             if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
-                link = f"https://discord.com/channels/954423559600631829/{transaction.discord_channel_id}/{transaction.discord_message_id}"
-                entry = f'ID:{transaction.id} with [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits with reason {transaction.reason}'
+                link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
+                entry = f'ID:{transaction.id} [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
                 description += entry + "\r\n"
             else:
-                entry = f'ID:{transaction.id} with **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits with reason {transaction.reason}'
+                entry = f'ID:{transaction.id} **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
                 description += entry + "\r\n"
 
 
@@ -102,15 +87,22 @@ class Cog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
-
         db_user = self.db.get_discord_user(message.author.id)
         
         if db_user is None:
             #TODO check Name and Nick
-            self.db.create_discord_user(message.author.id, message.author.display_name, 1234, message.author.bot, False)
-            
+            self.db.create_discord_user(message.author.id, message.author.display_name, 1000, message.author.bot, False)
             await ctx.channel.send(f"{message.author.display_name} created")
 
+        words_1984 = ["1984", "literarisch", "neunzehnhundertvierundachtzig"]
+
+
+        # using list comprehension
+        # checking if string contains list element
+        if [ele for ele in words_1984 if(ele in message.content)]:
+            await self.db.change_credits(message.author, TransactionType.mention_1984, ctx.author.id,
+            ctx.message.id, ctx.channel.id, None, f"Mentioned 1984")
+            await ctx.channel.send(f"You are using not allowed mentions")
 
     # triggers the on_score_update event
     @commands.command()
@@ -121,7 +113,8 @@ class Cog(commands.Cog):
     # gets triggered with the on_score_update event
     @on_score_update
     async def foobar(bot, member, user, delta_score, reason):
-        channel = bot.get_channel(954423559600631832)
+        changelog_channel_id = bot.db.get_key("ChangelogChannelId")
+        channel = bot.get_channel(changelog_channel_id)
         await channel.send(f"{str(member)}'s score was changed by {delta_score}")
 
 
