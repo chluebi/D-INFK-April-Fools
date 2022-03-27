@@ -1,6 +1,7 @@
 # library imports
 import os
 import logging
+from pickletools import string1
 import traceback
 import discord
 from discord.ext import commands
@@ -37,6 +38,8 @@ class Admin(commands.Cog):
             embed.add_field(name="admin allkeys", value=f"Get all key value pairs", inline=False)
             embed.add_field(name="admin sql <query>", value=f"BattleRush's playground", inline=False)
             embed.add_field(name="admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
+            embed.add_field(name="admin credits <type_id> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="admin manualcredits <amount> <reason>", value=f"Give credits", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')
@@ -147,23 +150,35 @@ class Admin(commands.Cog):
 
     @admin.command(name='credits')
     @commands.has_permissions(manage_channels=True)
-    async def admin_credits(self, ctx, member: discord.Member, transaction_type, amount: int, reason=None):
+    async def admin_credits(self, ctx, member: discord.Member, transaction_type: int, reason: str=None):
 
-        print(member)
-        print(transaction_type)
-        print(amount)
-        print(reason)
+        #if reason is None:
+        #    reason = "None"
 
-        if amount < 0:
-            amount = None
+        # TODO if reason null take default
 
         result = await self.db.change_credits(member, TransactionType(transaction_type), 
+        from_discord_user_id=ctx.author.id,
+        discord_message_id=ctx.message.id, 
+        discord_channel_id=ctx.channel.id,
+        amount=None,
+        reason=reason)
+        await ctx.channel.send(f"Added credits")
+
+    @admin.command(name='manualcredits')
+    @commands.has_permissions(manage_channels=True)
+    async def admin_manual_credits(self, ctx, member: discord.Member, amount: int, reason: str=None):
+
+        # TODO if reason null take default
+
+        result = await self.db.change_credits(member, TransactionType(1), 
         from_discord_user_id=ctx.author.id,
         discord_message_id=ctx.message.id, 
         discord_channel_id=ctx.channel.id,
         amount=amount,
         reason=reason)
         await ctx.channel.send(f"Added credits")
+    
 
 
 def setup(bot: commands.Bot):
