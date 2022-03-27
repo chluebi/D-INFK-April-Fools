@@ -33,7 +33,7 @@ class Rename(commands.Cog):
                 self.db.rename_discord_user(after.id, current)
                 return
 
-            self.db.change_credits(after, TransactionType.invalid_name_change, reason=f"Faulty rename from '{before.nick}' to '{after.nick}'") 
+            await self.db.change_credits(after, TransactionType.invalid_name_change, reason=f"Faulty rename from '{before.nick}' to '{after.nick}'") 
             
     #updates the user with the correct score again, if there score got updated or they did a faulty rename
     @on_score_update
