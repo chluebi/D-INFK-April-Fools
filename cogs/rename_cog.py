@@ -67,6 +67,9 @@ class Rename(commands.Cog):
         if not should_rename:
             return
         
+        if member == member.guild.owner:
+            return
+        
         # backdoor, so worst case after 3 minutes
         # the name can be changed again
         CUTOFF_SECONDS = 180 
