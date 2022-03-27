@@ -225,7 +225,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
         except Error as e:
             print(e)
 
-
+    def progress(self, status, remaining, total):
+        print(f'Copied {total-remaining} of {total} pages...')
+        
     def backup_db(self):
         try:
             now = datetime.now() # current date and time
@@ -243,11 +245,12 @@ class SQLiteDBManager(object, metaclass=Singleton):
                     
                     p.write('%s\n' % line)
 
+            self._conn.commit()
 
             bck = sqlite3.connect(os.path.join(self._backup_path, str('backup_' + now_string + '.db')))
             with bck:
-                self._conn.backup(bck, pages=1)
-            self._conn.commit()
+                self._conn.backup(bck, pages=1, progress=self.progress)
+            
             bck.close()
 
             print('Backup performed successfully!')
@@ -288,7 +291,7 @@ class SQLiteDBManager(object, metaclass=Singleton):
         print(query)
         if query == "backup":
             self.backup_db()
-            return
+            return "Backup created"
 
         try:
             c = self._conn.cursor()
