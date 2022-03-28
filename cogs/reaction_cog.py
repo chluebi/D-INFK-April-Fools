@@ -34,6 +34,12 @@ class Reaction(commands.Cog):
         messenger = reaction.message.author
         message_id = reaction.message.id
         channel_id = reaction.message.channel.id
+        
+        #if EvilBabyDemon reacts on birthdayWish
+        if user.id == 223932775474921472 and reaction.emoji.name == "peepolove":
+            await self.db.change_credits(messenger, TransactionType.birthday_wish, message_id, channel_id)
+            return
+        
         #if messenger is staff, give +-points to reactee
         if messenger.guild_permissions.manage_channels:
             messenger = user
