@@ -119,7 +119,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (10, 'Profanity', -10, 0),
         (11, 'RevertTransaction', 0, 0),
         (12, 'JudgeChange', 0, 0),
-        (13, 'TimeOut', 250, 0)"""
+        (13, 'TimeOut', 250, 0),
+        (14, 'EscapeAttempt', -100, 0)"""
 
         try:
             c = self._conn.cursor()

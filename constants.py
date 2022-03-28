@@ -15,5 +15,6 @@ class TransactionType(Enum):
     revert_transaction = 11
     judge_manual = 12
     timeout = 13
+    escape_attempt = 14
 
 
