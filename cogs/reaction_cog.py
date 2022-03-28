@@ -27,8 +27,8 @@ class Reaction(commands.Cog):
     #when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        #exclude not guild, not custom emoji, if user self reacts to own message
-        if user.guild is None or not reaction.custom_emoji or reaction.message.author.id == user.id:
+        #exclude bot, not guild, not custom emoji, if user self reacts to own message
+        if user.bot or user.guild is None or not reaction.custom_emoji or reaction.message.author.id == user.id:
             return
         
         messenger = reaction.message.author
