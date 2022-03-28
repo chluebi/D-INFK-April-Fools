@@ -23,7 +23,9 @@ class Rename(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-
+        if after.bot:
+            return
+        
         enable_rename = self.db.get_key("RemovePointsOnRename")
         enable_rename = True
 

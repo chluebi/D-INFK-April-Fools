@@ -86,6 +86,9 @@ class Cog(commands.Cog):
     # message listener
     @commands.Cog.listener()
     async def on_message(self, message):
+        if message.author.bot:
+            return
+        
         ctx = await self.bot.get_context(message)
         db_user = self.db.get_discord_user(message.author.id)
         

@@ -17,6 +17,8 @@ class profanity(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
+        if message.author.bot:
+            return
         prob = predict_prob([message.content])[0]
         if(prob >= self.cutoff):
             self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)

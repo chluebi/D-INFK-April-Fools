@@ -18,6 +18,8 @@ class GuildJoin(commands.Cog):
             
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        if member.bot:
+            return
         db_user = self.db.get_discord_user(member.id)
         
         if db_user is None:
