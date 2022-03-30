@@ -17,5 +17,5 @@ class TransactionType(Enum):
     timeout = 13
     escape_attempt = 14
     emotions = 15
-
+    staff_approved = 16
 
