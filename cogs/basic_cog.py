@@ -22,25 +22,14 @@ class Cog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.db
-
-    # basic command
-    @commands.command(name='ping')
-    async def ping(self, ctx, message: str = "Default message"):
-        await ctx.channel.send(f'{ctx.author.mention}, pong! {message}')
-
+    
+    # left in to quickly see that bot still alive
     # basic mod command
     # mods can probably manage channels so this is used as a proxy for that
-    @commands.command(name='mod-ping')
+    @commands.command(name='ping')
     @commands.has_permissions(manage_channels=True)
     async def mod_ping(self, ctx):
-        await ctx.channel.send(f'{ctx.author.mention}, you are a mod :)')
-
-    # basic admin command
-    @commands.command(name='admin-ping')
-    @commands.has_permissions(administrator=True)
-    async def admin_ping(self, ctx):
-        await ctx.channel.send(f'{ctx.author.mention}, you are an admin :)')
-
+        await ctx.channel.send(f'{ctx.author.mention}, I am still alive :)')
 
     # db test
     @commands.command(name='transactions')
@@ -116,20 +105,7 @@ class Cog(commands.Cog):
         #    embed.add_field(name="Entry", value="", inline=False)
         await ctx.send(embed=embed)
 
-
-    # TODO DISABLE FOR PROD
-    # credits test
-    @commands.command(name='credits')
-    @commands.has_permissions(administrator=True)
-    async def db_test(self, ctx):
-        print(ctx.channel.id)
-        db_user = await self.db.change_credits(ctx.author, TransactionType.birthday_wish, discord_message_id=ctx.message.id, discord_channel_id=ctx.channel.id, reason="Test credits")
-        # TODO Check None
-        await ctx.channel.send(f'credits test {ctx.author.display_name} has {db_user.social_credit}')
-
-
-
-    # message listener
+    # message listener fpr 1984 messages
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
