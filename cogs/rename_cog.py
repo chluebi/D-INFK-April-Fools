@@ -27,7 +27,6 @@ class Rename(commands.Cog):
             return
         
         enable_rename = self.db.get_key("RemovePointsOnRename")
-        enable_rename = True
 
         if enable_rename is None:
             print("\033[31mKey RemovePointsOnRename has not been set for rename_cog.py\033[0m | Not checking name renames")
