@@ -123,7 +123,7 @@ class Admin(commands.Cog):
     @admin.command(name='sql')
     @commands.has_permissions(manage_channels=True)
     async def sql_query(self, ctx, *, query):
-        print(query + "as query")
+        logging.info(query + "as query")
         result = self.db.sql_query(query)
         await ctx.channel.send(result[:2000])    
         
