@@ -26,7 +26,6 @@ class Admin(commands.Cog):
         if ctx.invoked_subcommand is None:
             color = discord.Color.green()
 
-                
             embed = discord.Embed(color=color)
             embed.add_field(name="admin", value=f"this command", inline=False)
             embed.add_field(name="admin loadusers", value=f"Load users into the db", inline=False)
@@ -38,8 +37,8 @@ class Admin(commands.Cog):
             embed.add_field(name="admin allkeys", value=f"Get all key value pairs", inline=False)
             embed.add_field(name="admin sql <query>", value=f"BattleRush's playground", inline=False)
             embed.add_field(name="admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
-            embed.add_field(name="admin credits <type_id> <reason>", value=f"Give credits", inline=False)
-            embed.add_field(name="admin manualcredits <amount> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="admin credits <user_ping> <type_id> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="admin manualcredits <user_ping> <amount> <reason>", value=f"Give credits", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')
@@ -53,7 +52,7 @@ class Admin(commands.Cog):
                 #TODO check Name and Nick
                 self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                 
-                await ctx.channel.send(f"{member.name} created")
+                #await ctx.channel.send(f"{member.name} created")
 
         # enforce naming
     @admin.command(name='enforcenames')
