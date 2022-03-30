@@ -368,6 +368,33 @@ class SQLiteDBManager(object, metaclass=Singleton):
     #endregion
 
     #region Users  
+    def get_top_discord_users(self, amount = 10):
+        users = []
+        sql = f"""SELECT 
+            DiscordUserId,
+            OldUsername,
+            CurrentUsername,
+            SocialCredit,
+            IsBot,
+            IsAdmin 
+        FROM DiscordUsers ORDER BY SocialCredit DESC LIMIT {amount}"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+
+            results = c.fetchmany(amount)
+            if results is None:
+                return None
+
+            for result in results:
+                users.append(DiscordUser(result[0], result[1], result[2], result[3], result[4], result[5]))
+
+            return users
+        except Error as e:
+            print(e)
+        return
+
     def get_discord_user(self, discord_user_id: int):
         sql = f"""SELECT 
             DiscordUserId,
