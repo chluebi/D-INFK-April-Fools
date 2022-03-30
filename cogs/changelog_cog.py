@@ -14,18 +14,23 @@ async def send_update(bot, member, user, delta_score, reason):
     if abs(delta_score) < 5:
         return
     
-    channel = bot.get_channel(CHANGELOG_CHANNEL)
     color = discord.Color.green()
     emote = POS_SCORE_EMOTE
     if delta_score < 0:
         color = discord.Color.red()
         emote = NEG_SCORE_EMOTE
         
+    if len(reason) == 0:  # can't send empty fields on discord
+        reason = "*no reason*"
+        
     embed = discord.Embed(color=color)
     embed.add_field(name="Score Update", value=f"Score: `{user.social_credit}`")
     embed.add_field(name="‎", value=f"{emote} `{delta_score}`")
     embed.add_field(name="Reason", value=reason, inline=False)
     embed.set_footer(text=str(member), icon_url=member.avatar_url)
+    
+    changelog_channel_id = bot.db.get_key("ChangelogChannelId")
+    channel = bot.get_channel(changelog_channel_id)
     await channel.send(embed=embed)
     
 # simply here cause its considered a cog

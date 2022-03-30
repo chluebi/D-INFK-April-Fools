@@ -12,6 +12,10 @@ class TransactionType(Enum):
     play_game = 8
     mention_1984 = 9
     profanity = 10
-    emotions = 11
+    revert_transaction = 11
+    judge_manual = 12
+    timeout = 13
+    escape_attempt = 14
+    emotions = 15
 
 
