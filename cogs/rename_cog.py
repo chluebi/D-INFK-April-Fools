@@ -1,6 +1,7 @@
 import asyncio
 import re
 import discord
+import logging
 
 from time import time
 
@@ -30,7 +31,7 @@ class Rename(commands.Cog):
         enable_rename = True
 
         if enable_rename is None:
-            print("\033[31mKey RemovePointsOnRename has not been set for rename_cog.py\033[0m | Not checking name renames")
+            logging.info("\033[31mKey RemovePointsOnRename has not been set for rename_cog.py\033[0m | Not checking name renames")
             return
         if not enable_rename:
             return
@@ -64,7 +65,7 @@ class Rename(commands.Cog):
     async def rename_member(bot, member: discord.Member, user: DiscordUser, delta_score: int, reason):
         should_rename = bot.db.get_key("ScoreNameChange")
         if should_rename is None:
-            print("\033[31mKey ScoreNameChange has not been set for rename_cog.py\033[0m | Not renaming any users now")
+            logging.info("\033[31mKey ScoreNameChange has not been set for rename_cog.py\033[0m | Not renaming any users now")
             return
         if not should_rename:
             return
