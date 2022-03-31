@@ -268,9 +268,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
             if not os.path.exists(self._backup_path):
                 os.makedirs(self._backup_path)
 
-            with io.open(os.path.join(self._backup_path, str('backup_' + now_string + '.sql')), 'w') as p: 
-                for line in self._conn.iterdump(): 
-                    p.write('%s\n' % line)
+            #with io.open(os.path.join(self._backup_path, str('backup_' + now_string + '.sql')), 'w') as p: 
+            #    for line in self._conn.iterdump(): 
+            #        p.write('%s\n' % line)
 
             self._conn.commit()
 

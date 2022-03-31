@@ -47,7 +47,10 @@ class Admin(commands.Cog):
     @admin.command(name='loadusers')
     @commands.has_permissions(manage_channels=True)
     async def load_users(self, ctx):
-        for member in ctx.guild.members:
+        members = await ctx.guild.fetch_members(limit=2500).flatten()
+        await ctx.channel.send(f"{len(members)} Users loaded")
+
+        for member in members:
             db_user = self.db.get_discord_user(member.id)
         
             if db_user is None:
@@ -62,12 +65,13 @@ class Admin(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def enforce_names(self, ctx):
         try:
-            for member in ctx.guild.members:
+            members = await ctx.guild.fetch_members(limit=2500).flatten()
+            await ctx.channel.send(f"{len(members)} Users loaded")
+
+            for member in members:
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.display_name} creating")
-                    #TODO check Name and Nick
                     db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                     await ctx.channel.send(f"{member.display_name} created")
                 
