@@ -10,6 +10,7 @@ Help page
 - change channel names
 - move channels
 - on join give role
+- make blacklist not case sensitive
 - Help page
 - ~~blacklist for words~~
 
