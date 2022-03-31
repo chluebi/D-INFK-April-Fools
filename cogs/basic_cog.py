@@ -30,61 +30,57 @@ class Cog(commands.Cog):
         if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
             return
 
-        try:
-            if member is None:
-                member = ctx.message.author
-            server_id = self.db.get_key("DiscordServerId")
+        if member is None:
+            member = ctx.message.author
+        server_id = self.db.get_key("DiscordServerId")
 
-            user = self.db.get_discord_user(member.id)
-            transactions = self.db.get_last_transactions(member.id, 10)
-            embed = discord.Embed(
-                title=f"Social credit history of {member.display_name}")
-            embed.set_author(name=member.display_name,
-                             icon_url=str(member.avatar_url))
-            embed.set_thumbnail(url=(member.avatar_url))
+        user = self.db.get_discord_user(member.id)
+        transactions = self.db.get_last_transactions(member.id, 10)
+        embed = discord.Embed(
+            title=f"Social credit history of {member.display_name}")
+        embed.set_author(name=member.display_name,
+                         icon_url=str(member.avatar_url))
+        embed.set_thumbnail(url=(member.avatar_url))
 
-            reason = transaction.reason
-            if reason is None:
-                reason = "n/a"
+        reason = transaction.reason
+        if reason is None:
+            reason = "n/a"
 
-            description = f"""**Your current credit balance is {user.social_credit}**""" + "\r\n"
-            for transaction in transactions:
+        description = f"""**Your current credit balance is {user.social_credit}**""" + "\r\n"
+        for transaction in transactions:
+            if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
+                link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
+                entry = f'ID: {transaction.id} [{transaction.type_name}]({link}) at {transaction.time} for {transaction.amount} Credits **Reason**: {reason[:100]}'
+                description += entry + "\r\n"
+            else:
+                entry = f'ID: {transaction.id} **{transaction.type_name}** at {transaction.time} for {transaction.amount} Credits **Reason**: {reason[:100]}'
+                description += entry + "\r\n"
+
+        """
+        while len(transactions) > 0:
+
+            field_value = ""
+
+            for transaction in transactions[5:]:
                 if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
                     link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
-                    entry = f'ID: {transaction.id} [{transaction.type_name}]({link}) at {transaction.time} for {transaction.amount} Credits **Reason**: {reason[:100]}'
-                    description += entry + "\r\n"
+                    entry = f'ID:{transaction.id} [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
+                    field_value += entry + "\r\n"
                 else:
-                    entry = f'ID: {transaction.id} **{transaction.type_name}** at {transaction.time} for {transaction.amount} Credits **Reason**: {reason[:100]}'
-                    description += entry + "\r\n"
+                    entry = f'ID:{transaction.id} **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
+                    field_value += entry + "\r\n"
+
+            
+            embed.add_field(name='Title', value=field_value, inline=True)
+
+            transactions = transactions[5:]
 
             """
-            while len(transactions) > 0:
 
-                field_value = ""
-
-                for transaction in transactions[5:]:
-                    if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
-                        link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
-                        entry = f'ID:{transaction.id} [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
-                        field_value += entry + "\r\n"
-                    else:
-                        entry = f'ID:{transaction.id} **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
-                        field_value += entry + "\r\n"
-
-                
-                embed.add_field(name='Title', value=field_value, inline=True)
-
-                transactions = transactions[5:]
-
-                """
-
-            embed.description = description
-            # for transaction in transactions:
-            #    embed.add_field(name="Entry", value="", inline=False)
-            await ctx.send(embed=embed)
-        except Exception as e:
-            print(e)
-            traceback.print_stack()
+        embed.description = description
+        # for transaction in transactions:
+        #    embed.add_field(name="Entry", value="", inline=False)
+        await ctx.send(embed=embed)
 
     @commands.command(name='leaderboard')
     async def get_leaderboard(self, ctx):
