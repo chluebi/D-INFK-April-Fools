@@ -18,7 +18,7 @@ import traceback
 
 
 class Cog(commands.Cog):
-
+    words_1984 = {"1984", "literarisch", "neunzehnhundertvierundachtzig"}
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.db
@@ -117,18 +117,17 @@ class Cog(commands.Cog):
         if db_user is None:
             #TODO check Name and Nick
             self.db.create_discord_user(message.author.id, message.author.display_name, 1000, message.author.bot, False)
-            await ctx.channel.send(f"{message.author.display_name} created")
-
-        words_1984 = ["1984", "literarisch", "neunzehnhundertvierundachtzig"]
-
 
         # using list comprehension
         # checking if string contains list element
-        if [ele for ele in words_1984 if(ele in message.content)]:
+        if [ele for ele in Cog.words_1984 if(ele in message.content)]:
             await self.db.change_credits(message.author, TransactionType.mention_1984, ctx.author.id,
-            ctx.message.id, ctx.channel.id, None, f"Mentioned 1984")
-            await ctx.channel.send(f"You are using not allowed mentions")
+            ctx.message.id, ctx.channel.id, None, f"Mentioned word on Blacklist")
 
+    @commands.command(name='blacklist')
+    @commands.has_permissions(manage_channels=True)
+    async def addto_blacklist(self, ctx, word):
+        Cog.words_1984.add(word)
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here
