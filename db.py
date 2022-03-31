@@ -123,7 +123,12 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (14, 'EscapeAttempt', -100, 0),
         (15, 'Emotions', -5, 0),
         (16, 'StaffApproved', 10, 0),
-        (17, 'StaffDisapproved', -10, 0)"""
+        (17, 'StaffDisapproved', -10, 0),
+        (18, 'VeryHelpful', 100, 0),
+        (19, 'BullyingStaff', -60, 0),
+        (20, 'PraisedStaff', 40, 0),
+        (21, 'ManipulatingKarma', -250, 0),
+        (22, 'MisusingVC', -200, 0)"""
 
         try:
             c = self._conn.cursor()

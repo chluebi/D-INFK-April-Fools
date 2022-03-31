@@ -19,4 +19,9 @@ class TransactionType(Enum):
     emotions = 15
     staff_approved = 16
     staff_disapproved = 17
+    very_helpful = 18
+    mean_to_staff = 19
+    praised_staff = 20
+    manipulating_karma = 21
+    misusing_vc = 22
 
