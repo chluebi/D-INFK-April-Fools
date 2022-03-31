@@ -34,6 +34,8 @@ class Cog(commands.Cog):
     # db test
     @commands.command(name='transactions')
     async def get_transactions(self, ctx, member: discord.Member=None):
+        if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
+            return
         try:
             if member is None:
                 member = ctx.message.author
@@ -88,6 +90,8 @@ class Cog(commands.Cog):
 
     @commands.command(name='leaderboard')
     async def get_transactions(self, ctx):
+        if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
+            return
         try:
             top_users = self.db.get_top_discord_users(10)
             embed=discord.Embed(title=f"Most Loyal Citizens of D-INFK")
@@ -109,7 +113,7 @@ class Cog(commands.Cog):
             print(e)
             traceback.print_stack()
 
-    # message listener fpr 1984 messages
+    # message listener for 1984 messages
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
@@ -136,6 +140,8 @@ class Cog(commands.Cog):
     
     @commands.command(name='help')
     async def help_page(self, ctx):
+        if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
+            return
         color = discord.Color.green()
 
         embed = discord.Embed(color=color)
