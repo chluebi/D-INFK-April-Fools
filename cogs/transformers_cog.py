@@ -30,8 +30,11 @@ class transformerstuff(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
+        if message.author.bot:
+            return
+        
         self.switch += 1
-        if self.switch % self.frac == 0 and not message.author.bot:
+        if self.switch % self.frac == 0:
             self.switch = 0
             prob = predict_prob([message.content])[0]
             if(prob >= self.cutoff):
