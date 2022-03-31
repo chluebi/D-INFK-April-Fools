@@ -87,7 +87,7 @@ class Cog(commands.Cog):
             traceback.print_stack()
 
     @commands.command(name='leaderboard')
-    async def get_transactions(self, ctx):
+    async def get_leaderboard(self, ctx):
         try:
             top_users = self.db.get_top_discord_users(10)
             embed=discord.Embed(title=f"Most Loyal Citizens of D-INFK")
@@ -124,23 +124,40 @@ class Cog(commands.Cog):
 
         # using list comprehension
         # checking if string contains list element
-        if [ele for ele in Cog.words_1984 if(ele in message.content)]:
+        if [ele for ele in Cog.words_1984 if(ele in message.content.lower())]:
             await self.db.change_credits(message.author, TransactionType.mention_1984, ctx.author.id,
             ctx.message.id, ctx.channel.id, None, f"Mentioned word on Blacklist")
 
-    @commands.command(name='blacklist')
+    @commands.command(name='add_blacklist')
     @commands.has_permissions(manage_channels=True)
-    async def addto_blacklist(self, ctx, word):
+    async def add_blacklist(self, ctx, word):
         Cog.words_1984.add(word)
+        await ctx.channel.send(f"'{word.lower()}' added to blacklist")  
 
-    
+    @commands.command(name='remove_blacklist')
+    @commands.has_permissions(manage_channels=True)
+    async def remove_blacklist(self, ctx, word):
+        Cog.words_1984.remove(word)
+        await ctx.channel.send(f"'{word.lower()}' removed from blacklist")    
+        
+    @commands.command(name='list_blacklist')
+    @commands.has_permissions(manage_channels=True)
+    async def list_blacklist(self, ctx):
+        await ctx.channel.send(Cog.words_1984)
+
     @commands.command(name='help')
     async def help_page(self, ctx):
         color = discord.Color.green()
 
         embed = discord.Embed(color=color)
-        embed.add_field(name="transaction", value=f"The last transactions of credits of a User", inline=False)
-        embed.add_field(name="judge", value=f"Change the Credits of a User by 20 (Only useable when you have the Judge Icon)", inline=False)
+        embed=discord.Embed(title=f"Social Credit Manager Help Page")
+        embed.set_author(name=ctx.author.display_name)
+        embed.set_thumbnail(url=(self.bot.user.avatar_url))
+
+        embed.add_field(name="-help", value=f"This command :)", inline=False)
+        embed.add_field(name="-transactions <member>", value=f"The last transactions of credits for the provided user. If no users is provided then it shows your credits.", inline=False)
+        embed.add_field(name="-leaderboard", value=f"Leaderboard of the most loyal citizens. If you are not on it, then you should take an example from them.", inline=False)
+        embed.add_field(name="-judge <member> <credits>", value=f"Change the Credits of a User by 20 (Only useable when you have the Judge Icon)", inline=False)
         await ctx.send(embed=embed)
 
 # this code actually gets run when bot.load_extension(file) gets called on this file

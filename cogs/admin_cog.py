@@ -19,7 +19,6 @@ class Admin(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-
     @commands.group()
     @commands.has_permissions(manage_channels=True)
     async def admin(self, ctx):
@@ -27,18 +26,22 @@ class Admin(commands.Cog):
             color = discord.Color.green()
 
             embed = discord.Embed(color=color)
-            embed.add_field(name="admin", value=f"this command", inline=False)
-            embed.add_field(name="admin loadusers", value=f"Load users into the db", inline=False)
-            embed.add_field(name="admin enforcenames", value=f"Enfoce the new style", inline=False)
-            embed.add_field(name="admin restorenames", value=f"Restore names to the old style", inline=False)
-            embed.add_field(name="admin addkey <key> <value> <type>", value=f"Add Key value pair", inline=False)
-            embed.add_field(name="admin getkey <key>", value=f"Get Key value pair", inline=False)
-            embed.add_field(name="admin updatekey <key> <value>", value=f"Update Key value pair", inline=False)
-            embed.add_field(name="admin allkeys", value=f"Get all key value pairs", inline=False)
-            embed.add_field(name="admin sql <query>", value=f"BattleRush's playground", inline=False)
-            embed.add_field(name="admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
-            embed.add_field(name="admin credits <member> <type_id> <reason>", value=f"Give credits", inline=False)
-            embed.add_field(name="admin manualcredits <member> <amount> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="-admin", value=f"this command", inline=False)
+            embed.add_field(name="-admin loadusers", value=f"Load users into the db", inline=False)
+            embed.add_field(name="-admin enforcenames", value=f"Enfoce the new style", inline=False)
+            embed.add_field(name="-admin restorenames", value=f"Restore names to the old style", inline=False)
+            embed.add_field(name="-admin addkey <key> <value> <type>", value=f"Add Key value pair", inline=False)
+            embed.add_field(name="-admin getkey <key>", value=f"Get Key value pair", inline=False)
+            embed.add_field(name="-admin updatekey <key> <value>", value=f"Update Key value pair", inline=False)
+            embed.add_field(name="-admin allkeys", value=f"Get all key value pairs", inline=False)
+            embed.add_field(name="-admin sql <query>", value=f"BattleRush's playground", inline=False)
+            embed.add_field(name="-admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
+            embed.add_field(name="-admin credits <member> <type_id> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="-admin manualcredits <member> <amount> <reason>", value=f"Give credits", inline=False)
+            
+            embed.add_field(name="-add_blacklist <word>", value=f"Add word to blacklist", inline=False) 
+            embed.add_field(name="-remove_blacklist <word>", value=f"Remove word from blacklist", inline=False)
+            embed.add_field(name="-list_blacklist", value=f"List all current blacklisted words", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')
@@ -177,8 +180,6 @@ class Admin(commands.Cog):
         amount=amount,
         reason=reason)
         await ctx.channel.send(f"Added credits")
-    
-
 
 def setup(bot: commands.Bot):
     bot.add_cog(Admin(bot))

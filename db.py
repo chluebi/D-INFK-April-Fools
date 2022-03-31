@@ -128,7 +128,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (19, 'BullyingStaff', -60, 0),
         (20, 'PraisedStaff', 40, 0),
         (21, 'ManipulatingKarma', -250, 0),
-        (22, 'MisusingVC', -200, 0)"""
+        (22, 'MisusingVC', -200, 0),
+        (23, 'InitialCreate', 1000, 0)"""
 
         try:
             c = self._conn.cursor()
@@ -432,8 +433,16 @@ class SQLiteDBManager(object, metaclass=Singleton):
             VALUES(?, ?, ?, ?, ?, ?);""", 
             (discord_user_id, name, name, social_credit, int(is_bot), int(is_admin)))
             self._conn.commit()
+
+            c.execute("""
+            INSERT INTO SocialCreditTransactions 
+            (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, Reason)
+            VALUES (?, ?, datetime(), ?, ?);""", (1000, TransactionType.initial_create.value, discord_user_id, "Inital create"))
+
+            self._conn.commit()
             return self.get_discord_user(discord_user_id)
         except Error as e:
+            traceback.print_stack()
             print(e)
             
     def rename_discord_user(self, discord_user_id, new_name):

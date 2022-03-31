@@ -24,4 +24,5 @@ class TransactionType(Enum):
     praised_staff = 20
     manipulating_karma = 21
     misusing_vc = 22
+    initial_create = 23
 

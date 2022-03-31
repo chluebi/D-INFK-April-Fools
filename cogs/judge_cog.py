@@ -19,8 +19,8 @@ class Judge(commands.Cog):
             await ctx.reply("No victim chosen to judge.", delete_after=10)
             return
         if member.id == ctx.author.id:
-            await ctx.reply("It is illegal to change your own score! -20 for even trying!")
-            await self.db.change_credits(member, TransactionType.judge_manual, ctx.message.id, ctx.channel.id, amount=-20, reason="Tried to increase their own score")
+            await ctx.reply("It is illegal to change your own score! -50 for even trying!")
+            await self.db.change_credits(member, TransactionType.judge_manual, ctx.message.id, ctx.channel.id, amount=-50, reason="Tried to increase their own score")
             return
         if score_update == 0:
             await ctx.reply("Changing the score by 0 doesn't make any sense.", delete_after=10)
