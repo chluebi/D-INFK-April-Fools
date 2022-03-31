@@ -88,22 +88,26 @@ class Cog(commands.Cog):
 
     @commands.command(name='leaderboard')
     async def get_transactions(self, ctx):
-        top_users = self.db.get_top_discord_users(10)
-        embed=discord.Embed(title=f"Top citizens of D-INFK")
-        embed.set_author(name=ctx.author.display_name)
-        embed.set_thumbnail(url=(self.bot.avatar_url))
+        try:
+            top_users = self.db.get_top_discord_users(10)
+            embed=discord.Embed(title=f"Most Loyal Citizens of D-INFK")
+            embed.set_author(name=ctx.author.display_name)
+            embed.set_thumbnail(url=(self.bot.user.avatar_url))
 
-        description = ""
-        place = 1
-        for user in top_users:
-            entry = f'**{place}** **{user.display_name}** with {user.social_credit} Credits'
-            description += entry + "\r\n"
-            place += 1
+            description = ""
+            place = 1
+            for user in top_users:
+                entry = f'**{place}** **{user.current_name}** with {user.social_credit} Credits'
+                description += entry + "\r\n"
+                place += 1
 
-        embed.description = description
-        #for transaction in transactions:
-        #    embed.add_field(name="Entry", value="", inline=False)
-        await ctx.send(embed=embed)
+            embed.description = description
+            #for transaction in transactions:
+            #    embed.add_field(name="Entry", value="", inline=False)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
     # message listener fpr 1984 messages
     @commands.Cog.listener()
