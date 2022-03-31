@@ -75,9 +75,9 @@ class Admin(commands.Cog):
                     db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                     await ctx.channel.send(f"{member.display_name} created")
                 
-                    credits = str(db_user.social_credit)
-                    nick = f'{member.display_name[:25]} [{credits}]'
-                    result = await member.edit(nick=nick)
+                credits = str(db_user.social_credit)
+                nick = f'{member.display_name[:25]} [{credits}]'
+                result = await member.edit(nick=nick)
 
         except Exception as e:
             print(e)
