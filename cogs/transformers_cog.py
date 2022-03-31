@@ -20,7 +20,7 @@ class transformerstuff(commands.Cog):
         self.cutoff = 0.5
         self.switch = 0
         #the fraction of messages we analyze
-        self.frac = 3
+        self.frac = 10
         self.emotes = {
             0 : "anger",
             1 : "disgust",
@@ -30,28 +30,25 @@ class transformerstuff(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        prob = predict_prob([message.content])[0]
-        if(prob >= self.cutoff):
-            await self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
-            await message.add_reaction("<:badlang:957425440857939978>")
-            return
         self.switch += 1
-        if self.switch == self.frac or len(message.content) >= 500 or message.author.bot:
+        if self.switch % self.frac == 0 and not message.author.bot:
             self.switch = 0
-            return
-        scores = self.emotional(message.content)
-        # At the moment this only looks out for unwanted emotions, we could also reward good emotions if wanted
+            prob = predict_prob([message.content])[0]
+            if(prob >= self.cutoff):
+                await self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
+                await message.add_reaction("<:badlang:957425440857939978>")
+                return
+            self.switch += 1
+            scores = self.emotional(message.content)
+            # At the moment this only looks out for unwanted emotions, we could also reward good emotions if wanted
 
-        relevantscores = [scores[0][0]['score'], scores[0][1]['score'], scores[0][2]['score'], scores[0][5]['score']]
-        disgustprob = scores[0][1]['score']
-        fearprob = scores[0][2]['score']
-        sadprob = scores[0][5]['score']
+            relevantscores = [scores[0][0]['score'], scores[0][1]['score'], scores[0][2]['score'], scores[0][5]['score']]
 
-        for i, score in enumerate(relevantscores):
-            if score >= self.cutoff:
-                #TODO: add in that it sends a message about how we don't like the emotion
-                await self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
-                await message.add_reaction("<:Illegalemotion:957425440342020197>")
+            for i, score in enumerate(relevantscores):
+                if score >= self.cutoff:
+                    #TODO: add in that it sends a message about how we don't like the emotion
+                    await self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
+                    await message.add_reaction("<:Illegalemotion:957425440342020197>")
 
 
 
