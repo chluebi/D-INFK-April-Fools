@@ -41,7 +41,6 @@ async def on_ready():
 # removing help command to hide funny commands
 bot.remove_command('help')
 
-
 @bot.event
 async def on_command_error(ctx, error):
     error_message = ''.join(traceback.format_exception(

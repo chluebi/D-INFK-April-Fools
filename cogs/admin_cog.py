@@ -56,7 +56,7 @@ class Admin(commands.Cog):
             if db_user is None:
                 #await ctx.channel.send(f"unknown user {member.name} creating")
                 #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
+                self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                 
                 #await ctx.channel.send(f"{member.name} created")
 
