@@ -26,7 +26,6 @@ class Admin(commands.Cog):
         if ctx.invoked_subcommand is None:
             color = discord.Color.green()
 
-                
             embed = discord.Embed(color=color)
             embed.add_field(name="admin", value=f"this command", inline=False)
             embed.add_field(name="admin loadusers", value=f"Load users into the db", inline=False)
@@ -53,7 +52,7 @@ class Admin(commands.Cog):
                 #TODO check Name and Nick
                 self.db.create_discord_user(member.id, member.name, 1000, member.bot, False)
                 
-                await ctx.channel.send(f"{member.name} created")
+                #await ctx.channel.send(f"{member.name} created")
 
         # enforce naming
     @admin.command(name='enforcenames')

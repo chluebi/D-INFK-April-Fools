@@ -18,7 +18,7 @@ import traceback
 
 
 class Cog(commands.Cog):
-
+    words_1984 = {"1984", "literarisch", "neunzehnhundertvierundachtzig"}
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.db
@@ -88,22 +88,26 @@ class Cog(commands.Cog):
 
     @commands.command(name='leaderboard')
     async def get_transactions(self, ctx):
-        top_users = self.db.get_top_discord_users(10)
-        embed=discord.Embed(title=f"Top citizens of D-INFK")
-        embed.set_author(name=ctx.author.display_name)
-        embed.set_thumbnail(url=(self.bot.avatar_url))
+        try:
+            top_users = self.db.get_top_discord_users(10)
+            embed=discord.Embed(title=f"Most Loyal Citizens of D-INFK")
+            embed.set_author(name=ctx.author.display_name)
+            embed.set_thumbnail(url=(self.bot.user.avatar_url))
 
-        description = ""
-        place = 1
-        for user in top_users:
-            entry = f'**{place}** **{user.display_name}** with {user.social_credit} Credits'
-            description += entry + "\r\n"
-            place += 1
+            description = ""
+            place = 1
+            for user in top_users:
+                entry = f'**{place}** **{user.current_name}** with {user.social_credit} Credits'
+                description += entry + "\r\n"
+                place += 1
 
-        embed.description = description
-        #for transaction in transactions:
-        #    embed.add_field(name="Entry", value="", inline=False)
-        await ctx.send(embed=embed)
+            embed.description = description
+            #for transaction in transactions:
+            #    embed.add_field(name="Entry", value="", inline=False)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
     # message listener fpr 1984 messages
     @commands.Cog.listener()
@@ -117,18 +121,27 @@ class Cog(commands.Cog):
         if db_user is None:
             #TODO check Name and Nick
             self.db.create_discord_user(message.author.id, message.author.display_name, 1000, message.author.bot, False)
-            await ctx.channel.send(f"{message.author.display_name} created")
-
-        words_1984 = ["1984", "literarisch", "neunzehnhundertvierundachtzig"]
-
 
         # using list comprehension
         # checking if string contains list element
-        if [ele for ele in words_1984 if(ele in message.content)]:
+        if [ele for ele in Cog.words_1984 if(ele in message.content)]:
             await self.db.change_credits(message.author, TransactionType.mention_1984, ctx.author.id,
-            ctx.message.id, ctx.channel.id, None, f"Mentioned 1984")
-            await ctx.channel.send(f"You are using not allowed mentions")
+            ctx.message.id, ctx.channel.id, None, f"Mentioned word on Blacklist")
 
+    @commands.command(name='blacklist')
+    @commands.has_permissions(manage_channels=True)
+    async def addto_blacklist(self, ctx, word):
+        Cog.words_1984.add(word)
+
+    
+    @commands.command(name='help')
+    async def help_page(self, ctx):
+        color = discord.Color.green()
+
+        embed = discord.Embed(color=color)
+        embed.add_field(name="transaction", value=f"The last transactions of credits of a User", inline=False)
+        embed.add_field(name="judge", value=f"Change the Credits of a User by 20 (Only useable when you have the Judge Icon)", inline=False)
+        await ctx.send(embed=embed)
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here

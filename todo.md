@@ -1,26 +1,22 @@
 # Social Credit System
 
+Help page
+
+# still to do
+- remove perms from everyone, student, external, prof
+- change colours of role to gradient
+- rename roles
+- move roles up
+- change channel names
+- move channels
+- on join give role
+- make blacklist not case sensitive
+- Help page
+- ~~blacklist for words~~
 
 
 
-## Edge cases
-- New people joining
-  - people leaving and joining
 
-## Vote Manipulation
-command to add and remove points
-a few standard cmds with fixed points
-
-
-## Manual cmds
-- change credit
-- disable automatic stuff if it doesnt work as intended anymore or limits bot with ratelimit too much?
-
-## ML stuff
-- add text obscenity detection
-
-
-# Last important stuff
 
 
 ## commands
@@ -35,34 +31,9 @@ admin command with subcommands to change score
   - sad smth bad about staff -60
   - manual +-{x}
 
-maybe not subcommand but await commands:
-score_change @ping
-Bot: gudboi, notgudboi
-gudboi
-
-
-reactions on admin 
-- check in reaction_cog.py if on reacted is admin
-  - dont give score reacted but reactor
-
-command for judge
-- can give user +-20 max
-- at most every 2 min
-- does not gain anything
-
-check on change score the role
-
-
 
 ## perms stuff
-### still to do
-- remove perms from everyone, student, external, prof
-- change colours of role to gradient
-- rename roles
-- move roles up
-- change channel names
-- move channels
-- check on change score the role
+
 
 
 
