@@ -42,12 +42,11 @@ class Cog(commands.Cog):
                          icon_url=str(member.avatar_url))
         embed.set_thumbnail(url=(member.avatar_url))
 
-        reason = transaction.reason
-        if reason is None:
-            reason = "n/a"
-
         description = f"""**Your current credit balance is {user.social_credit}**""" + "\r\n"
         for transaction in transactions:
+            reason = transaction.reason
+            if reason is None:
+                reason = "n/a"
             if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
                 link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
                 entry = f'ID: {transaction.id} [{transaction.type_name}]({link}) at {transaction.time} for {transaction.amount} Credits **Reason**: {reason[:100]}'
