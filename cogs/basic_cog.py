@@ -36,29 +36,28 @@ class Cog(commands.Cog):
     async def get_transactions(self, ctx, member: discord.Member=None):
         if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
             return
+
         try:
             if member is None:
                 member = ctx.message.author
             server_id = self.db.get_key("DiscordServerId")
 
             user = self.db.get_discord_user(member.id)
-            print(user)
             transactions = self.db.get_last_transactions(member.id, 10)
             embed=discord.Embed(title=f"Social credit history of {member.display_name}")
-            embed.set_author(name=member.display_name)
+            embed.set_author(name=member.display_name, icon_url=str(member.avatar_url))
             embed.set_thumbnail(url=(member.avatar_url))
 
             description = f"""**Your current credit balance is {user.social_credit}**""" + "\r\n"
             for transaction in transactions:
                 if transaction.discord_channel_id is not None and transaction.discord_message_id is not None:
                     link = f"https://discord.com/channels/{server_id}/{transaction.discord_channel_id}/{transaction.discord_message_id}"
-                    entry = f'ID:{transaction.id} [{transaction.type_name}]({link}) at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
+                    entry = f'ID: {transaction.id} [{transaction.type_name}]({link}) at {transaction.time} for {transaction.amount} Credits **Reason**: {transaction.reason[:100]}'
                     description += entry + "\r\n"
                 else:
-                    entry = f'ID:{transaction.id} **{transaction.type_name}** at {transaction.date_time} for {transaction.amount} Credits Reason: {transaction.reason[:100]}'
+                    entry = f'ID: {transaction.id} **{transaction.type_name}** at {transaction.time} for {transaction.amount} Credits **Reason**: {transaction.reason[:100]}'
                     description += entry + "\r\n"
-
-            
+  
             """
             while len(transactions) > 0:
 
@@ -96,7 +95,7 @@ class Cog(commands.Cog):
         try:
             top_users = self.db.get_top_discord_users(10)
             embed=discord.Embed(title=f"Most Loyal Citizens of D-INFK")
-            embed.set_author(name=ctx.author.display_name)
+            embed.set_author(name=ctx.author.display_name, icon_url=str(ctx.author.avatar_url))
             embed.set_thumbnail(url=(self.bot.user.avatar_url))
 
             description = ""
@@ -158,7 +157,7 @@ class Cog(commands.Cog):
 
         embed = discord.Embed(color=color)
         embed=discord.Embed(title=f"Social Credit Manager Help Page")
-        embed.set_author(name=ctx.author.display_name)
+        embed.set_author(name=ctx.author.display_name, icon_url=str(ctx.author.avatar_url))
         embed.set_thumbnail(url=(self.bot.user.avatar_url))
 
         embed.add_field(name="-help", value=f"This command :)", inline=False)

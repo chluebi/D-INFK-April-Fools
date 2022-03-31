@@ -9,6 +9,7 @@ class Transaction(object):
         self.discord_user_id = discord_user_id
         self.amount = amount
         self.date_time = date_time
+        self.time = date_time[11:]
         self.discord_message_id = discord_message_id
         self.discord_channel_id = discord_channel_id
         self.reason = reason
