@@ -108,9 +108,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
         sql = f"""INSERT INTO SocialCreditTransactionTypes (SocialCreditTransactionTypeId, Name, DefaultAmount, AllowOnce)
         VALUES 
         (1, 'AdminChange', NULL, 0),
-        (2, 'ReactionUp', 1, 0),
-        (3, 'ReactionDown', -1, 0),
-        (4, 'BirthdayWish', 20, 1),
+        (2, 'ReactionUp', 5, 0),
+        (3, 'ReactionDown', -5, 0),
+        (4, 'BirthdayWish', 30, 1),
         (5, 'TAApproved', 5, 1),
         (6, 'ReceiveGoodRep', 20, 1),
         (7, 'InvalidNameChange', -20, 1),
@@ -122,7 +122,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (13, 'TimeOut', 250, 0),
         (14, 'EscapeAttempt', -100, 0),
         (15, 'Emotions', -5, 0),
-        (16, 'StaffApproved', 10, 0)"""
+        (16, 'StaffApproved', 10, 0),
+        (17, 'StaffDisapproved', -10, 0)"""
 
         try:
             c = self._conn.cursor()

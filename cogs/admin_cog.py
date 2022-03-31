@@ -37,8 +37,8 @@ class Admin(commands.Cog):
             embed.add_field(name="admin allkeys", value=f"Get all key value pairs", inline=False)
             embed.add_field(name="admin sql <query>", value=f"BattleRush's playground", inline=False)
             embed.add_field(name="admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
-            embed.add_field(name="admin credits <user_ping> <type_id> <reason>", value=f"Give credits", inline=False)
-            embed.add_field(name="admin manualcredits <user_ping> <amount> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="admin credits <member> <type_id> <reason>", value=f"Give credits", inline=False)
+            embed.add_field(name="admin manualcredits <member> <amount> <reason>", value=f"Give credits", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')

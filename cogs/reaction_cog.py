@@ -40,12 +40,19 @@ class Reaction(commands.Cog):
             await self.db.change_credits(messenger, TransactionType.birthday_wish, message_id, channel_id)
             return
         
-        if reaction.emoji.name == "admin_approved" and messenger.guild_permissions.manage_channels:
+        #if messenger is staff
+        if messenger.guild_permissions.manage_channels:
+            
+            #easy way to add points
+            if reaction.emoji.name == "staff_approved":
                 await self.db.change_credits(messenger, TransactionType.staff_approved, message_id, channel_id)
                 return
-
-        #if messenger is staff, give +-points to reactee
-        if messenger.guild_permissions.manage_channels:
+            #easy way to remove points
+            if reaction.emoji.name == "staff_disapproved":
+                await self.db.change_credits(messenger, TransactionType.staff_disapproved, message_id, channel_id)
+                return
+            
+            #give +-points to reactee
             messenger = user
         
         #ReactionUp Transaction

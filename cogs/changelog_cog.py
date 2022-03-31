@@ -11,7 +11,7 @@ NEG_SCORE_EMOTE = "<:down:955093895748935730>"
 @on_score_update
 async def send_update(bot, member, user, delta_score, reason):
     # ignore score changes that are less than 5
-    if abs(delta_score) < 5:
+    if abs(delta_score) < 10:
         return
     
     color = discord.Color.green()

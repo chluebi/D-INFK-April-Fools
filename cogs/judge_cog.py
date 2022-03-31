@@ -12,6 +12,9 @@ class Judge(commands.Cog):
     @commands.cooldown(1, 120, commands.BucketType.member)
     @commands.guild_only()
     async def judge(self, ctx, member: discord.Member, score_update = 0):
+        #spam botfun (general on test server) 
+        if ctx.channel.id != 768600365602963496 and ctx.channel.id != 747776646551175217 and ctx.channel.id != 954423559600631832:
+            return
         if member is None:
             await ctx.reply("No victim chosen to judge.", delete_after=10)
             return
