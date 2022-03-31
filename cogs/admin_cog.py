@@ -11,8 +11,6 @@ from constants import TransactionType
 import util
 import events
 
-from db import SQLiteDBManager
-from db import DiscordUser
 
 class Admin(commands.Cog):
     def __init__(self, bot):
@@ -27,21 +25,35 @@ class Admin(commands.Cog):
 
             embed = discord.Embed(color=color)
             embed.add_field(name="-admin", value=f"this command", inline=False)
-            embed.add_field(name="-admin loadusers", value=f"Load users into the db", inline=False)
-            embed.add_field(name="-admin enforcenames", value=f"Enfoce the new style", inline=False)
-            embed.add_field(name="-admin restorenames", value=f"Restore names to the old style", inline=False)
-            embed.add_field(name="-admin addkey <key> <value> <type>", value=f"Add Key value pair", inline=False)
-            embed.add_field(name="-admin getkey <key>", value=f"Get Key value pair", inline=False)
-            embed.add_field(name="-admin updatekey <key> <value>", value=f"Update Key value pair", inline=False)
-            embed.add_field(name="-admin allkeys", value=f"Get all key value pairs", inline=False)
-            embed.add_field(name="-admin sql <query>", value=f"BattleRush's playground", inline=False)
-            embed.add_field(name="-admin reverttransaction <id>", value=f"Revert transaction Id", inline=False)
-            embed.add_field(name="-admin credits <member> <type_id> <reason>", value=f"Give credits", inline=False)
-            embed.add_field(name="-admin manualcredits <member> <amount> <reason>", value=f"Give credits", inline=False)
-            
-            embed.add_field(name="-add_blacklist <word>", value=f"Add word to blacklist", inline=False) 
-            embed.add_field(name="-remove_blacklist <word>", value=f"Remove word from blacklist", inline=False)
-            embed.add_field(name="-list_blacklist", value=f"List all current blacklisted words", inline=False)
+            embed.add_field(name="-admin loadusers",
+                            value=f"Load users into the db", inline=False)
+            embed.add_field(name="-admin enforcenames",
+                            value=f"Enfoce the new style", inline=False)
+            embed.add_field(name="-admin restorenames",
+                            value=f"Restore names to the old style", inline=False)
+            embed.add_field(name="-admin addkey <key> <value> <type>",
+                            value=f"Add Key value pair", inline=False)
+            embed.add_field(name="-admin getkey <key>",
+                            value=f"Get Key value pair", inline=False)
+            embed.add_field(name="-admin updatekey <key> <value>",
+                            value=f"Update Key value pair", inline=False)
+            embed.add_field(name="-admin allkeys",
+                            value=f"Get all key value pairs", inline=False)
+            embed.add_field(name="-admin sql <query>",
+                            value=f"BattleRush's playground", inline=False)
+            embed.add_field(name="-admin reverttransaction <id>",
+                            value=f"Revert transaction Id", inline=False)
+            embed.add_field(name="-admin credits <member> <type_id> <reason>",
+                            value=f"Give credits", inline=False)
+            embed.add_field(name="-admin manualcredits <member> <amount> <reason>",
+                            value=f"Give credits", inline=False)
+
+            embed.add_field(name="-add_blacklist <word>",
+                            value=f"Add word to blacklist", inline=False)
+            embed.add_field(name="-remove_blacklist <word>",
+                            value=f"Remove word from blacklist", inline=False)
+            embed.add_field(
+                name="-list_blacklist", value=f"List all current blacklisted words", inline=False)
             await ctx.send(embed=embed)
 
     @admin.command(name='loadusers')
@@ -52,13 +64,14 @@ class Admin(commands.Cog):
 
         for member in members:
             db_user = self.db.get_discord_user(member.id)
-        
+
             if db_user is None:
-                #await ctx.channel.send(f"unknown user {member.name} creating")
-                #TODO check Name and Nick
-                self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
-                
-                #await ctx.channel.send(f"{member.name} created")
+                # await ctx.channel.send(f"unknown user {member.name} creating")
+                # TODO check Name and Nick
+                self.db.create_discord_user(
+                    member.id, member.display_name, 1000, member.bot, False)
+
+                # await ctx.channel.send(f"{member.name} created")
 
         # enforce naming
     @admin.command(name='enforcenames')
@@ -72,16 +85,17 @@ class Admin(commands.Cog):
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
-                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
+                    db_user = self.db.create_discord_user(
+                        member.id, member.display_name, 1000, member.bot, False)
                     await ctx.channel.send(f"{member.display_name} created")
-                
+
                 credits = str(db_user.social_credit)
                 nick = f'{member.display_name[:25]} [{credits}]'
                 result = await member.edit(nick=nick)
 
         except Exception as e:
             print(e)
-    
+
     # restore names
     @admin.command(name='restorenames')
     @commands.has_permissions(manage_channels=True)
@@ -91,9 +105,10 @@ class Admin(commands.Cog):
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.name} creating")
-                    #TODO check Name and Nick
-                    db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
+                    # await ctx.channel.send(f"unknown user {member.name} creating")
+                    # TODO check Name and Nick
+                    db_user = self.db.create_discord_user(
+                        member.id, member.display_name, 1000, member.bot, False)
                     await ctx.channel.send(f"{member.display_name} created")
 
                 nick = db_user.old_name
@@ -131,8 +146,8 @@ class Admin(commands.Cog):
     async def sql_query(self, ctx, *, query):
         logging.info(query + "as query")
         result = self.db.sql_query(query)
-        await ctx.channel.send(result[:2000])    
-        
+        await ctx.channel.send(result[:2000])
+
     @admin.command(name='reverttransaction')
     @commands.has_permissions(manage_channels=True)
     async def revert_transaction(self, ctx, id: int):
@@ -148,42 +163,42 @@ class Admin(commands.Cog):
                 return
 
             result = await self.db.change_credits(member, TransactionType.revert_transaction, ctx.author.id,
-            ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
+                                                  ctx.message.id, ctx.channel.id, transaction.amount * (-1), f"Reverted transaction {id} with Amount: {transaction.amount}")
             await ctx.channel.send(f"Transaction with Id: {id} was reverted")
         except Exception as e:
             print(e)
 
-
     @admin.command(name='credits')
     @commands.has_permissions(manage_channels=True)
-    async def admin_credits(self, ctx, member: discord.Member, transaction_type: int, reason: str=None):
+    async def admin_credits(self, ctx, member: discord.Member, transaction_type: int, reason: str = None):
 
-        #if reason is None:
+        # if reason is None:
         #    reason = "None"
 
         # TODO if reason null take default
 
-        result = await self.db.change_credits(member, TransactionType(transaction_type), 
-        from_discord_user_id=ctx.author.id,
-        discord_message_id=ctx.message.id, 
-        discord_channel_id=ctx.channel.id,
-        amount=None,
-        reason=reason)
+        result = await self.db.change_credits(member, TransactionType(transaction_type),
+                                              from_discord_user_id=ctx.author.id,
+                                              discord_message_id=ctx.message.id,
+                                              discord_channel_id=ctx.channel.id,
+                                              amount=None,
+                                              reason=reason)
         await ctx.channel.send(f"Added credits")
 
     @admin.command(name='manualcredits')
     @commands.has_permissions(manage_channels=True)
-    async def admin_manual_credits(self, ctx, member: discord.Member, amount: int, reason: str=None):
+    async def admin_manual_credits(self, ctx, member: discord.Member, amount: int, reason: str = None):
 
         # TODO if reason null take default
 
-        result = await self.db.change_credits(member, TransactionType(1), 
-        from_discord_user_id=ctx.author.id,
-        discord_message_id=ctx.message.id, 
-        discord_channel_id=ctx.channel.id,
-        amount=amount,
-        reason=reason)
+        result = await self.db.change_credits(member, TransactionType(1),
+                                              from_discord_user_id=ctx.author.id,
+                                              discord_message_id=ctx.message.id,
+                                              discord_channel_id=ctx.channel.id,
+                                              amount=amount,
+                                              reason=reason)
         await ctx.channel.send(f"Added credits")
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Admin(bot))
