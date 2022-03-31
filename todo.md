@@ -9,6 +9,7 @@ Help page
 - move roles up
 - change channel names
 - move channels
+- on join give role
 - Help page
 - ~~blacklist for words~~
 
