@@ -21,7 +21,7 @@ class profanity(commands.Cog):
             return
         prob = predict_prob([message.content])[0]
         if(prob >= self.cutoff):
-            self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
+            await self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
 
 
 def setup(bot: commands.Bot):
