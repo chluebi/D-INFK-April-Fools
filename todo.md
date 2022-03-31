@@ -7,9 +7,9 @@ Help page
 - ~~change colours of role to gradient~~
 - ~~rename roles~~
 - move roles up
-- change channel names
+- ~~change channel names~~
 - move channels
-- on join give role
+- ~~on join give role~~
 - ~~make blacklist not case sensitive~~~
 - ~~Help page~~
 - ~~blacklist for words~~
