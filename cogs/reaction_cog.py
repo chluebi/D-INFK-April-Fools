@@ -35,13 +35,27 @@ class Reaction(commands.Cog):
         message_id = reaction.message.id
         channel_id = reaction.message.channel.id
         
+        if messenger.bot:
+            return
+
         #if EvilBabyDemon reacts on birthdayWish
         if user.id == 223932775474921472 and reaction.emoji.name == "peepolove":
             await self.db.change_credits(messenger, TransactionType.birthday_wish, message_id, channel_id)
             return
         
-        #if messenger is staff, give +-points to reactee
+        #if messenger is staff
         if messenger.guild_permissions.manage_channels:
+            
+            #easy way to add points
+            if reaction.emoji.name == "staff_approved":
+                await self.db.change_credits(messenger, TransactionType.staff_approved, message_id, channel_id)
+                return
+            #easy way to remove points
+            if reaction.emoji.name == "staff_disapproved":
+                await self.db.change_credits(messenger, TransactionType.staff_disapproved, message_id, channel_id)
+                return
+            
+            #give +-points to reactee
             messenger = user
         
         #ReactionUp Transaction

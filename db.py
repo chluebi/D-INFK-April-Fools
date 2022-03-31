@@ -108,9 +108,9 @@ class SQLiteDBManager(object, metaclass=Singleton):
         sql = f"""INSERT INTO SocialCreditTransactionTypes (SocialCreditTransactionTypeId, Name, DefaultAmount, AllowOnce)
         VALUES 
         (1, 'AdminChange', NULL, 0),
-        (2, 'ReactionUp', 1, 0),
-        (3, 'ReactionDown', -1, 0),
-        (4, 'BirthdayWish', 20, 1),
+        (2, 'ReactionUp', 5, 0),
+        (3, 'ReactionDown', -5, 0),
+        (4, 'BirthdayWish', 30, 1),
         (5, 'TAApproved', 5, 1),
         (6, 'ReceiveGoodRep', 20, 1),
         (7, 'InvalidNameChange', -20, 1),
@@ -121,7 +121,15 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (12, 'JudgeChange', 0, 0),
         (13, 'TimeOut', 250, 0),
         (14, 'EscapeAttempt', -100, 0),
-        (15, 'Emotions', -5 , 0)"""
+        (15, 'Emotions', -5, 0),
+        (16, 'StaffApproved', 10, 0),
+        (17, 'StaffDisapproved', -10, 0),
+        (18, 'VeryHelpful', 100, 0),
+        (19, 'BullyingStaff', -60, 0),
+        (20, 'PraisedStaff', 40, 0),
+        (21, 'ManipulatingKarma', -250, 0),
+        (22, 'MisusingVC', -200, 0),
+        (23, 'InitialCreate', 1000, 0)"""
 
         try:
             c = self._conn.cursor()
@@ -367,6 +375,33 @@ class SQLiteDBManager(object, metaclass=Singleton):
     #endregion
 
     #region Users  
+    def get_top_discord_users(self, amount = 10):
+        users = []
+        sql = f"""SELECT 
+            DiscordUserId,
+            OldUsername,
+            CurrentUsername,
+            SocialCredit,
+            IsBot,
+            IsAdmin 
+        FROM DiscordUsers ORDER BY SocialCredit DESC LIMIT {amount}"""
+
+        try:
+            c = self._conn.cursor()
+            c.execute(sql)
+
+            results = c.fetchmany(amount)
+            if results is None:
+                return None
+
+            for result in results:
+                users.append(DiscordUser(result[0], result[1], result[2], result[3], result[4], result[5]))
+
+            return users
+        except Error as e:
+            print(e)
+        return
+
     def get_discord_user(self, discord_user_id: int):
         sql = f"""SELECT 
             DiscordUserId,
@@ -398,8 +433,16 @@ class SQLiteDBManager(object, metaclass=Singleton):
             VALUES(?, ?, ?, ?, ?, ?);""", 
             (discord_user_id, name, name, social_credit, int(is_bot), int(is_admin)))
             self._conn.commit()
+
+            c.execute("""
+            INSERT INTO SocialCreditTransactions 
+            (Amount, SocialCreditTransactionTypeId, DateTime, DiscordUserId, Reason)
+            VALUES (?, ?, datetime(), ?, ?);""", (1000, TransactionType.initial_create.value, discord_user_id, "Inital create"))
+
+            self._conn.commit()
             return self.get_discord_user(discord_user_id)
         except Error as e:
+            traceback.print_stack()
             print(e)
             
     def rename_discord_user(self, discord_user_id, new_name):
