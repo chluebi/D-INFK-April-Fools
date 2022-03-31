@@ -84,7 +84,6 @@ class Cog(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as e:
             print(e)
-            traceback.print_stack()
 
     @commands.command(name='leaderboard')
     async def get_leaderboard(self, ctx):
