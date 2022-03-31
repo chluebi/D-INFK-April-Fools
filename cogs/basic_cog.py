@@ -123,8 +123,14 @@ class Cog(commands.Cog):
         db_user = self.db.get_discord_user(message.author.id)
         
         if db_user is None:
-            #TODO check Name and Nick
             self.db.create_discord_user(message.author.id, message.author.display_name, 1000, message.author.bot, False)
+
+            # User didnt exist in the DB enforce the name
+            should_rename = self.bot.db.get_key("ScoreNameChange")
+            if should_rename:
+                score = f" [1000]"
+                new_name = message.author.display_name[:25]+score
+                await message.author.edit(nick=new_name)
 
         # using list comprehension
         # checking if string contains list element
