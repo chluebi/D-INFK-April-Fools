@@ -35,6 +35,9 @@ class Reaction(commands.Cog):
         message_id = reaction.message.id
         channel_id = reaction.message.channel.id
         
+        if messenger.bot:
+            return
+
         #if EvilBabyDemon reacts on birthdayWish
         if user.id == 223932775474921472 and reaction.emoji.name == "peepolove":
             await self.db.change_credits(messenger, TransactionType.birthday_wish, message_id, channel_id)
