@@ -4,14 +4,14 @@ Help page
 
 # still to do
 - remove perms from everyone, student, external, prof
-- change colours of role to gradient
-- rename roles
+- ~~change colours of role to gradient~~
+- ~~rename roles~~
 - move roles up
 - change channel names
 - move channels
 - on join give role
-- make blacklist not case sensitive
-- Help page
+- ~~make blacklist not case sensitive~~~
+- ~~Help page~~
 - ~~blacklist for words~~
 
 
