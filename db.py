@@ -122,7 +122,8 @@ class SQLiteDBManager(object, metaclass=Singleton):
         (13, 'TimeOut', 250, 0),
         (14, 'EscapeAttempt', -100, 0),
         (15, 'Emotions', -5, 0),
-        (16, 'StaffApproved', 10, 0)"""
+        (16, 'StaffApproved', 10, 0),
+        (17, 'StaffApproved', -10, 0)"""
 
         try:
             c = self._conn.cursor()

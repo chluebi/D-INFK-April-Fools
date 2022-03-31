@@ -18,4 +18,5 @@ class TransactionType(Enum):
     escape_attempt = 14
     emotions = 15
     staff_approved = 16
+    staff_disapproved = 17
 
