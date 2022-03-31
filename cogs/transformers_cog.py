@@ -32,7 +32,7 @@ class transformerstuff(commands.Cog):
     async def on_message(self, message):
         prob = predict_prob([message.content])[0]
         if(prob >= self.cutoff):
-            self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
+            await self.db.change_credits(message.author, TransactionType.profanity, message.id, message.channel.id)
             await message.add_reaction("<:badlang:957425440857939978>")
             return
         self.switch += 1
@@ -50,7 +50,7 @@ class transformerstuff(commands.Cog):
         for i, score in enumerate(relevantscores):
             if score >= self.cutoff:
                 #TODO: add in that it sends a message about how we don't like the emotion
-                self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
+                await self.db.change_credits(message.author, TransactionType.emotions, message.id, message.channel.id)
                 await message.add_reaction("<:Illegalemotion:957425440342020197>")
 
 
