@@ -62,18 +62,18 @@ class Admin(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def enforce_names(self, ctx):
         try:
+            await ctx.channel.send(f"{len(ctx.guild.members)} Users loaded")
+            
             for member in ctx.guild.members:
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
-                    #await ctx.channel.send(f"unknown user {member.display_name} creating")
-                    #TODO check Name and Nick
                     db_user = self.db.create_discord_user(member.id, member.display_name, 1000, member.bot, False)
                     await ctx.channel.send(f"{member.display_name} created")
                 
-                credits = str(db_user.social_credit)
-                nick = f'{member.display_name[:25]} [{credits}]'
-                result = await member.edit(nick=nick)
+                    credits = str(db_user.social_credit)
+                    nick = f'{member.display_name[:25]} [{credits}]'
+                    result = await member.edit(nick=nick)
 
         except Exception as e:
             print(e)
