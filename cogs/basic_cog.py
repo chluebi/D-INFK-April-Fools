@@ -136,7 +136,7 @@ class Cog(commands.Cog):
 
         embed = discord.Embed(color=color)
         embed.add_field(name="transaction", value=f"The last transactions of credits of a User", inline=False)
-        embed.add_field(name="judge", value=f"Change the Credits of a User by 20 (Only useable when you have the Judge Icon", inline=False)
+        embed.add_field(name="judge", value=f"Change the Credits of a User by 20 (Only useable when you have the Judge Icon)", inline=False)
         await ctx.send(embed=embed)
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
