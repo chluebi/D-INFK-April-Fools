@@ -1,6 +1,8 @@
 import discord
 import logging
 
+import asyncio
+
 from discord_user import DiscordUser
 
 
@@ -21,5 +23,6 @@ def on_score_update(func):
 # decorator are also triggered
 async def score_update(member: discord.Member, user: DiscordUser, delta_score: int, reason):
     logging.info("event fire")
+    loop = asyncio.get_event_loop()
     for f in functions_to_trigger:
-        await f(bot[0], member, user, delta_score, reason)
+        loop.create_task(f(bot[0], member, user, delta_score, reason))
