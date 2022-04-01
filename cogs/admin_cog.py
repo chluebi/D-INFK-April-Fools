@@ -108,6 +108,8 @@ class Admin(commands.Cog):
             for member in members:
                 if member == member.guild.owner:
                     continue
+                if member.id == 78194957210353665:
+                    continue
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
@@ -118,6 +120,8 @@ class Admin(commands.Cog):
                     await ctx.channel.send(f"{member.display_name} created")
 
                 nick = db_user.old_name
+                if member.display_name == nick:
+                    continue
                 result = await member.edit(nick=nick)
                 print(f"Renamed from {member.display_name} to {db_user.old_name}")
 
