@@ -497,7 +497,6 @@ class SQLiteDBManager(object, metaclass=Singleton):
                 reason = result[1]
             
             user = self.get_discord_user(discord_user_id)
-            print("inside db")
             await score_update(member, user, amount, reason)
             
             return user
