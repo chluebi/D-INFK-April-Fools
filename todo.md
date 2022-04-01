@@ -126,3 +126,42 @@ for every new lvl/role colour gradient change
 1800
 1900
 2000
+
+
+How the perm system was set up:
+Permission System:
+- 300
+  - remove add reaction perm
+- 500
+  - remove nick change perm
+    - Got abandoned and most roles got the perms removed as we had ratelimit problems
+- 700
+  - Use External emojis
+  - Use external stickers
+- 1000
+  - normal
+- 1100
+  - staff gud emote
+  - rainbow emote
+- 1200
+- emotes
+- 1300
+  - good-citizens (channel) without read message history
+- 1400
+  - sparkles icon
+  - getting read perm for good-citizens
+- 1500
+  - more emotes
+- 1600
+  - new channel better-citizens
+  - copper icon
+- 1700  
+  - new channel best-citizens
+  - silver icon
+- 1800
+  - gold icon
+  - new channel the-elite
+- 1900
+  - king emote
+- 2000
+  - judge icon
