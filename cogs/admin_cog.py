@@ -101,7 +101,11 @@ class Admin(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def restore_names(self, ctx):
         try:
-            for member in ctx.guild.members:
+
+            members = await ctx.guild.fetch_members(limit=2500).flatten()
+            await ctx.channel.send(f"{len(members)} Users loaded")
+
+            for member in members:
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
@@ -113,6 +117,8 @@ class Admin(commands.Cog):
 
                 nick = db_user.old_name
                 result = await member.edit(nick=nick)
+
+                print(f"Renamed from {member.display_name} to {db_user.old_name}")
 
         except Exception as e:
             print(e)
