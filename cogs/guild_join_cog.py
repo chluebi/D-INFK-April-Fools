@@ -20,8 +20,8 @@ class GuildJoin(commands.Cog):
             return
         db_user = self.db.get_discord_user(member.id)
 
-        role = discord.utils.get(member.guild.roles, id="957399970636509264")
-        await self.bot.add_roles(member, role)
+        role = member.guild.get_role(957399970636509264)
+        await member.add_roles(role)
 
         if db_user is None:
             # TODO check Name and Nick
