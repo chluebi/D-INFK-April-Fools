@@ -7,6 +7,7 @@ from discord_user import DiscordUser
 
 
 functions_to_trigger = set()
+already_added = set()
 
 bot = [None]
 
@@ -16,6 +17,9 @@ def setup(b):
 
 
 def on_score_update(func):
+    if func.__name__ in already_added:
+        return
+    already_added.add(func.__name__)
     functions_to_trigger.add(func)
     return func
 

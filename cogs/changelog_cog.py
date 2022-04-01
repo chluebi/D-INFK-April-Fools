@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 from events import on_score_update
 
 
@@ -7,7 +8,6 @@ POS_SCORE_EMOTE = "<:up:955093895505653800>"
 NEG_SCORE_EMOTE = "<:down:955093895748935730>"
 
 # sends the score updates into the changelog channel
-
 
 @on_score_update
 async def send_update(bot, member, user, delta_score, reason):
@@ -35,8 +35,6 @@ async def send_update(bot, member, user, delta_score, reason):
     channel = bot.get_channel(changelog_channel_id)
     await channel.send(embed=embed)
 
-# simply here cause its considered a cog
 
-
-def setup(bot):
+def setup(bot: commands.Bot):
     pass

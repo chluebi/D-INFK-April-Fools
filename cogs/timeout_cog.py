@@ -6,7 +6,7 @@ from discord.ext import commands
 from db import DiscordUser
 
 from constants import TransactionType
-from events import on_score_update, score_update
+from events import on_score_update
 
 
 class Timeout(commands.Cog):

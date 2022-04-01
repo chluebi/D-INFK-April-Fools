@@ -1,12 +1,7 @@
 
-import asyncio
-
-import discord
-
 from discord.ext import commands
 
 from constants import TransactionType
-from events import on_score_update, score_update
 
 
 class GuildJoin(commands.Cog):
