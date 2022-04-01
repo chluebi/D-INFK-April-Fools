@@ -3,20 +3,20 @@ import asyncio
 import discord
 import events
 from discord.ext import commands
-from db import SQLiteDBManager
 
 from bot import discord_config
 
 from constants import TransactionType
 
 
-#ETH server emote ids
+# ETH server emote ids
 #                  thx                  this                aww                 santaawww
-GOOD_EMOTE_IDS = [807968281507659776, 747783377662378004, 810266232061952040, 910435057607524352]
+GOOD_EMOTE_IDS = [807968281507659776, 747783377662378004,
+                  810266232061952040, 910435057607524352]
 #                   that                yikes               mike_bruh           bruh
-BAD_EMOTE_IDS = [758262252699779073, 851469747643220048, 937352413810151424, 747783377159061545]
+BAD_EMOTE_IDS = [758262252699779073, 851469747643220048,
+                 937352413810151424, 747783377159061545]
 TA_APPROVED = 893967315996143616
-
 
 
 class Reaction(commands.Cog):
@@ -24,52 +24,52 @@ class Reaction(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-    #when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
+    # when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        #exclude bot, not guild, not custom emoji, if user self reacts to own message
+        # exclude bot, not guild, not custom emoji, if user self reacts to own message
         if user.bot or user.guild is None or not reaction.custom_emoji or reaction.message.author.id == user.id:
             return
-        
+
         messenger = reaction.message.author
         message_id = reaction.message.id
         channel_id = reaction.message.channel.id
-        
+
         if messenger.bot:
             return
 
-        #if EvilBabyDemon reacts on birthdayWish
+        # if EvilBabyDemon reacts on birthdayWish
         if user.id == 223932775474921472 and reaction.emoji.name == "peepolove":
             await self.db.change_credits(messenger, TransactionType.birthday_wish, message_id, channel_id)
             return
-        
+
         if user.guild_permissions.manage_channels:
-            #easy way to add points
+            # easy way to add points
             if reaction.emoji.name == "staff_approved":
                 await self.db.change_credits(messenger, TransactionType.staff_approved, message_id, channel_id)
                 return
-            #easy way to remove points
+            # easy way to remove points
             if reaction.emoji.name == "staff_disapproved":
                 await self.db.change_credits(messenger, TransactionType.staff_disapproved, message_id, channel_id)
                 return
 
-
-        #if messenger is staff
+        # if messenger is staff
         if messenger.guild_permissions.manage_channels:
-            #give +-points to reactee
+            # give +-points to reactee
             messenger = user
-        
-        #ReactionUp Transaction
+
+        # ReactionUp Transaction
         if any(reaction.emoji.id == s for s in GOOD_EMOTE_IDS):
             await self.db.change_credits(messenger, TransactionType.reaction_good, message_id, channel_id)
-        #ReactionDown Transaction
+        # ReactionDown Transaction
         elif any(reaction.emoji.id == s for s in BAD_EMOTE_IDS):
             await self.db.change_credits(messenger, TransactionType.reaction_bad, message_id, channel_id)
-        #TAapproved
+        # TAapproved
         elif reaction.emoji.id == TA_APPROVED:
             await self.db.change_credits(messenger, TransactionType.ta_approved, message_id, channel_id)
 
-# old raw reaction code 
+
+# old raw reaction code
 """
     #when one reacts with good emotes they give Social Credit Score, remove some when bad reaction
     @commands.Cog.listener()
@@ -95,6 +95,7 @@ class Reaction(commands.Cog):
 
 # this code actually gets run when bot.load_extension(file) gets called on this file
 # all cogs that should be loaded need to be added in here
+
+
 def setup(bot: commands.Bot):
     bot.add_cog(Reaction(bot))
-    

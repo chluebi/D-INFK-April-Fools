@@ -10,7 +10,6 @@ import util
 import events
 
 from db import SQLiteDBManager
-from db import DiscordUser
 
 discord_config = util.parse_config('discord')
 
@@ -18,7 +17,8 @@ discord_config = util.parse_config('discord')
 intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
-bot.db = SQLiteDBManager(discord_config["db_path"], discord_config["backup_path"])
+bot.db = SQLiteDBManager(
+    discord_config["db_path"], discord_config["backup_path"])
 
 '''
 basic logging
@@ -40,6 +40,7 @@ async def on_ready():
 
 # removing help command to hide funny commands
 bot.remove_command('help')
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -67,19 +68,20 @@ async def on_command_error(ctx, error):
     if (isinstance(error, commands.CommandOnCooldown)):
         await ctx.message.reply(f"Command on Cooldown. {int(error.retry_after)} seconds remaining...", delete_after=5)
         return
-    
+
     if (isinstance(error, commands.errors.BadArgument)):
         await ctx.message.add_reaction('❌')
         return
 
     logging.error(error_message)
-    
-    
+
+
 extensions = {}
+
 
 @commands.has_permissions(manage_channels=True)
 @bot.group(name='extensions')
-async def extension(ctx : commands.Context):
+async def extension(ctx: commands.Context):
     if ctx.invoked_subcommand is None:
         msg = '''Extensions Loaded:
         {0}
@@ -89,8 +91,9 @@ async def extension(ctx : commands.Context):
         '''.format('\n'.join(key for key, value in extensions.items() if value), '\n'.join(key for key, value in extensions.items() if not value))
         await ctx.send(msg)
 
+
 @extension.command(name='load')
-async def load_extension(ctx : commands.Context, name : str):
+async def load_extension(ctx: commands.Context, name: str):
     if name not in extensions:
         await ctx.send(f'Extension ``{name}`` not found.')
         return
@@ -103,8 +106,9 @@ async def load_extension(ctx : commands.Context, name : str):
     logging.info(f'Extension ``{name}`` loaded.')
     await ctx.send(f'Extension ``{name}`` loaded.')
 
+
 @extension.command(name='unload')
-async def unload_extension(ctx : commands.Context, name : str):
+async def unload_extension(ctx: commands.Context, name: str):
     if name not in extensions:
         await ctx.send(f'Extension ``{name}`` not found.')
     if not extensions[name]:
