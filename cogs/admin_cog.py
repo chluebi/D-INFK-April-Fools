@@ -106,6 +106,8 @@ class Admin(commands.Cog):
             await ctx.channel.send(f"{len(members)} Users loaded")
 
             for member in members:
+                if member == member.guild.owner:
+                    continue
                 db_user = self.db.get_discord_user(member.id)
 
                 if db_user is None:
@@ -117,7 +119,6 @@ class Admin(commands.Cog):
 
                 nick = db_user.old_name
                 result = await member.edit(nick=nick)
-
                 print(f"Renamed from {member.display_name} to {db_user.old_name}")
 
         except Exception as e:
