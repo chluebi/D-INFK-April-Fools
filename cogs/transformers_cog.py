@@ -12,10 +12,10 @@ class transformerstuff(commands.Cog):
         self.db = bot.db
         self.emotional = pipeline(
             "text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
-        self.cutoff = 0.5
+        self.cutoff = 0.75
         self.switch = 0
         # the fraction of messages we analyze
-        self.frac = 10
+        self.frac = 4
         self.emotes = {
             0: "anger",
             1: "disgust",
